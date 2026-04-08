@@ -3,160 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Chat</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
   margin: 0;
   font-family: Arial;
-  background: #ece5dd;
-  display: flex;
+  background: #e5ddd5;
+}
+
+/* FULL APP CONTAINER */
+.app {
+  max-width: 450px;
+  margin: auto;
   height: 100vh;
-}
-
-/* Sidebar */
-#sidebar {
-  width: 320px;
-  background: #fff;
-  border-right: 1px solid #ccc;
-  overflow-y: auto;
-  transition: 0.3s;
-}
-
-#sidebar h3 {
-  background: #075e54;
-  color: white;
-  padding: 15px;
-  margin: 0;
-}
-
-/* Mobile toggle */
-.menu-btn {
-  display: none;
-  padding: 10px;
-  background: #075e54;
-  color: white;
-  cursor: pointer;
-}
-
-/* Users */
-.user-item {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.user-item:hover { background: #f5f5f5; }
-
-/* Chat */
-#chat-area {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  background: #fff;
 }
 
-#chat-header {
+/* HEADER */
+.header {
   background: #075e54;
   color: white;
-  padding: 15px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-#chat-box {
-  flex: 1;
-  padding: 15px;
+.menu-btn {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* SIDEBAR (HIDDEN LIKE APP) */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 80%;
+  height: 100%;
+  background: #fff;
+  z-index: 1000;
+  transition: 0.3s;
   overflow-y: auto;
 }
 
-/* Messages animation */
-.msg {
-  margin: 5px 0;
+#sidebar.active {
+  left: 0;
+}
+
+.user-item {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+/* CHAT */
+#chat-box {
+  flex: 1;
   padding: 10px;
+  overflow-y: auto;
+  background: #e5ddd5;
+}
+
+/* MESSAGE STYLE */
+.msg {
+  padding: 10px;
+  margin: 5px;
   border-radius: 10px;
-  max-width: 70%;
-  animation: fadeIn 0.3s ease;
+  max-width: 75%;
+  animation: fade 0.3s;
 }
 
-@keyframes fadeIn {
+.user-msg { background: white; }
+.admin-msg { background: #dcf8c6; margin-left: auto; }
+
+@keyframes fade {
   from {opacity:0; transform: translateY(10px);}
-  to {opacity:1; transform: translateY(0);}
+  to {opacity:1;}
 }
 
-.user-msg {
-  background: white;
-}
-
-.admin-msg {
-  background: #dcf8c6;
-  margin-left: auto;
-}
-
-/* Input */
+/* INPUT */
 .input-area {
   display: flex;
-  padding: 10px;
+  padding: 8px;
   background: #f0f0f0;
 }
+
 input {
   flex: 1;
-  padding: 12px;
+  padding: 10px;
   border-radius: 20px;
   border: none;
-}
-button {
-  padding: 10px 15px;
-  background: #075e54;
-  color: white;
-  border: none;
-  border-radius: 20px;
 }
 
-/* MOBILE */
-@media(max-width: 768px){
-  #sidebar {
-    position: absolute;
-    left: -100%;
-    height: 100%;
-    z-index: 10;
-  }
-  #sidebar.active {
-    left: 0;
-  }
-  .menu-btn {
-    display: block;
-  }
+button {
+  margin-left: 5px;
+  padding: 10px 15px;
+  border: none;
+  background: #075e54;
+  color: white;
+  border-radius: 20px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="sidebar">
-  <h3>Users</h3>
-  <div id="users-list"></div>
-</div>
+<div id="sidebar"></div>
 
-<div id="chat-area">
-  <div id="chat-header">
+<div class="app">
+
+  <div class="header">
     <span class="menu-btn" onclick="toggleMenu()">☰</span>
-    <span id="header-name">Select User</span>
+    <span id="header-name">Chat</span>
   </div>
 
   <div id="chat-box"></div>
 
   <div class="input-area">
-    <input id="msg-input" placeholder="Type..." disabled>
-    <button id="send-btn" disabled>Send</button>
+    <input id="msg-input" placeholder="Message">
+    <button onclick="sendMsg()">Send</button>
   </div>
+
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getDatabase, ref, push, set, onChildAdded, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSy...",
-  authDomain: "...",
   databaseURL: "...",
   projectId: "..."
 };
@@ -164,75 +142,35 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let activeUserId = null;
-
-// 🔔 Notification permission
-if (Notification.permission !== "granted") {
-  Notification.requestPermission();
-}
+let userId = "testUser";
 
 // Sidebar toggle
 window.toggleMenu = () => {
   document.getElementById("sidebar").classList.toggle("active");
 };
 
-// Load users
-onValue(ref(db, 'users_list'), snapshot => {
-  const list = document.getElementById('users-list');
-  list.innerHTML = "";
-
-  snapshot.forEach(child => {
-    const user = child.val();
-    const div = document.createElement("div");
-    div.className = "user-item";
-    div.innerText = user.name;
-
-    div.onclick = () => {
-      loadChat(child.key, user.name);
-      document.getElementById("sidebar").classList.remove("active");
-    };
-
-    list.appendChild(div);
-  });
-});
-
-// Load chat
-function loadChat(userId, name){
-  activeUserId = userId;
-  document.getElementById("header-name").innerText = name;
-  document.getElementById("msg-input").disabled = false;
-  document.getElementById("send-btn").disabled = false;
-  document.getElementById("chat-box").innerHTML = "";
-
-  onChildAdded(ref(db, 'chats/' + userId), snap => {
-    const data = snap.val();
-    renderMessage(data);
-
-    // 🔔 Show notification
-    if(data.sender === "user"){
-      new Notification("New Message", {
-        body: data.text
-      });
-    }
-  });
-}
-
-// Send message
-document.getElementById("send-btn").onclick = () => {
+// Send
+window.sendMsg = () => {
   const input = document.getElementById("msg-input");
   if(!input.value) return;
 
-  push(ref(db, 'chats/' + activeUserId), {
+  push(ref(db, "chats/" + userId), {
     sender: "admin",
     text: input.value,
-    timestamp: Date.now()
+    time: Date.now()
   });
 
   input.value = "";
 };
 
+// Receive
+onChildAdded(ref(db, "chats/" + userId), snap => {
+  const data = snap.val();
+  render(data);
+});
+
 // Render
-function renderMessage(data){
+function render(data){
   const div = document.createElement("div");
   div.className = "msg " + (data.sender === "admin" ? "admin-msg" : "user-msg");
   div.innerText = data.text;
@@ -244,5 +182,4 @@ function renderMessage(data){
 </script>
 
 </body>
-</html>
 </html>
