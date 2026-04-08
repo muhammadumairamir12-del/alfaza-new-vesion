@@ -1,1486 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scissor Hair Salon | Premium Barber — Multan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
-<!-- Font Awesome for Social Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<style>
-:root {
-  --ink: #0C0B09;
-  --ink2: #161410;
-  --ink3: #211F1A;
-  --gold: #C9A84C;
-  --gold2: #E8C96B;
-  --cream: #F4EFE4;
-  --cream2: #EDE6D6;
-  --muted: #6B6455;
-  --accent: #8B2E2E;
-  --white: #FAFAF8;
-  --border: rgba(201,168,76,0.18);
-  --border2: rgba(201,168,76,0.08);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);overflow-x:hidden;cursor:none;}
+    <meta charset="UTF-8">
+    <title>Admin Panel - Master Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; height: 100vh; margin: 0; background: #ece5dd; }
+        
+        /* Sidebar List */
+        #sidebar { width: 350px; background: white; border-right: 1px solid #ccc; overflow-y: auto; display: flex; flex-direction: column;}
+        #sidebar h3 { background: #075e54; color: white; margin: 0; padding: 20px; text-align: center; }
+        .user-item { padding: 15px; border-bottom: 1px solid #f1f1f1; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .user-item:hover { background: #f5f5f5; }
+        .active-user { background: #ebebeb !important; }
+        .user-info { display: flex; flex-direction: column; width: 70%; }
+        .user-name { font-weight: bold; font-size: 16px; color: #000; }
+        .last-msg { font-size: 13px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .meta-info { display: flex; flex-direction: column; align-items: flex-end; }
+        .time { font-size: 12px; color: #888; margin-bottom: 5px; }
+        .badge { background: #25d366; color: white; font-size: 12px; font-weight: bold; border-radius: 50%; padding: 4px 8px; display: none; }
 
-/* CUSTOM CURSOR */
-.cursor{position:fixed;width:10px;height:10px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transition:transform 0.15s ease;mix-blend-mode:difference;}
-.cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(201,168,76,0.6);border-radius:50%;pointer-events:none;z-index:9998;transition:all 0.12s ease;}
+        /* Chat Area */
+        #chat-area { flex: 1; display: flex; flex-direction: column; background: #e5ddd5; }
+        #chat-header { background: #075e54; color: white; padding: 15px; font-size: 18px; display: flex; flex-direction: column;}
+        #chat-header span { font-size: 12px; color: #dcf8c6; }
+        #chat-box { flex: 1; padding: 20px; overflow-y: auto; }
+        
+        .msg { margin: 5px 0; padding: 8px 12px; border-radius: 10px; max-width: 60%; clear: both; }
+        .user-msg { background: #ffffff; float: left; border-top-left-radius: 0; }
+        .admin-msg { background: #dcf8c6; float: right; border-top-right-radius: 0; }
+        .msg-time { font-size: 10px; color: #888; display: block; text-align: right; margin-top: 5px; }
+        .ticks { font-size: 12px; font-weight: bold; margin-left: 5px; color: gray; }
+        .blue-ticks { color: #34b7f1; }
 
-/* LOADER */
-.loader{position:fixed;inset:0;z-index:9999;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;transition:opacity 0.6s, visibility 0.6s;}
-.loader.hidden{opacity:0;visibility:hidden;}
-.loader-logo{font-family:'Playfair Display',serif;font-size:42px;color:var(--gold);letter-spacing:8px;opacity:0;animation:loaderIn 0.8s 0.3s both;}
-.loader-line{width:0;height:1px;background:var(--gold);animation:lineGrow 1.2s 0.6s both;}
-.loader-text{font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);opacity:0;animation:loaderIn 0.6s 1.2s both;}
-@keyframes loaderIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-@keyframes lineGrow{from{width:0}to{width:120px}}
-
-/* SCROLL INDICATOR */
-.scroll-ind{position:fixed;left:28px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;align-items:center;gap:6px;}
-.scroll-ind-line{width:1px;height:60px;background:linear-gradient(var(--gold),transparent);}
-.scroll-ind-text{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);writing-mode:vertical-rl;}
-
-/* ANNOUNCEMENT */
-.ann{background:var(--gold);color:var(--ink);text-align:center;padding:10px 5%;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;position:relative;overflow:hidden;}
-.ann::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(0,0,0,0.04) 10px,rgba(0,0,0,0.04) 20px);}
-
-/* NAV */
-nav{position:sticky;top:0;z-index:100;background:rgba(12,11,9,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:18px 5%;display:flex;justify-content:space-between;align-items:center;}
-.logo{font-family:'Playfair Display',serif;font-size:24px;letter-spacing:3px;color:var(--gold);}
-.logo span{color:var(--cream);font-weight:400;}
-.logo em{font-style:italic;font-size:11px;display:block;letter-spacing:5px;color:var(--muted);text-transform:uppercase;font-family:'DM Sans',sans-serif;margin-top:-4px;}
-.nav-links{display:flex;gap:32px;list-style:none;}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;transition:color 0.3s;position:relative;}
-.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--gold);transition:width 0.3s;}
-.nav-links a:hover{color:var(--cream);}
-.nav-links a:hover::after{width:100%;}
-.nav-links a.active{color:var(--cream);}
-.nav-links a.active::after{width:100%;}
-.nav-right{display:flex;align-items:center;gap:12px;}
-.btn-nav-call{color:var(--cream);text-decoration:none;font-size:11px;letter-spacing:2px;border:1px solid var(--border);padding:9px 18px;transition:all 0.3s;display:flex;align-items:center;gap:6px;}
-.btn-nav-call:hover{border-color:var(--gold);color:var(--gold);}
-.btn-nav-book{background:var(--gold);color:var(--ink);padding:10px 22px;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;text-decoration:none;transition:all 0.3s;font-family:'DM Sans',sans-serif;}
-.btn-nav-book:hover{background:var(--gold2);transform:translateY(-1px);}
-
-/* HAMBURGER MENU */
-.hamburger{display:none;flex-direction:column;justify-content:space-between;width:24px;height:18px;cursor:pointer;z-index:101;}
-.hamburger span{display:block;width:100%;height:2px;background:var(--gold);transition:all 0.3s ease;}
-.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px, 5px);}
-.hamburger.open span:nth-child(2){opacity:0;}
-.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px, -5px);}
-.nav-links-mobile{display:none;position:absolute;top:100%;left:0;width:100%;background:rgba(12,11,9,0.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);flex-direction:column;padding:20px 5%;border-top:1px solid var(--border);opacity:0;visibility:hidden;transition:opacity 0.3s, visibility 0.3s;}
-.nav-links-mobile.open{display:flex;opacity:1;visibility:visible;}
-.nav-links-mobile li{padding:10px 0;}
-.nav-links-mobile a{font-size:14px;padding:10px 0;display:block;}
-
-/* HERO */
-.hero{min-height:100vh;display:grid;grid-template-columns:55% 45%;position:relative;overflow:hidden;}
-.hero-bg-text{position:absolute;bottom:-40px;left:-20px;font-family:'Playfair Display',serif;font-size:22vw;color:rgba(201,168,76,0.03);font-weight:900;line-height:1;pointer-events:none;z-index:0;white-space:nowrap;}
-.hero-left{display:flex;flex-direction:column;justify-content:center;padding:100px 5% 80px 8%;position:relative;z-index:2;}
-.hero-number{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:28px;display:flex;align-items:center;gap:14px;animation:revealUp 0.8s 1.6s both;}
-.hero-number::before{content:'';width:40px;height:1px;background:var(--gold);}
-.hero-h1{font-family:'Playfair Display',serif;font-size:clamp(58px,7vw,92px);line-height:0.92;letter-spacing:-1px;margin-bottom:24px;animation:revealUp 0.8s 1.7s both;}
-.hero-h1 em{color:var(--gold);font-style:italic;display:block;}
-.hero-h1 strong{color:var(--cream);font-weight:900;}
-.hero-sub{font-size:14px;color:var(--muted);line-height:1.9;max-width:400px;margin-bottom:40px;font-weight:300;animation:revealUp 0.8s 1.8s both;}
-.hero-btns{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:55px;animation:revealUp 0.8s 1.9s both;}
-.btn-gold{background:var(--gold);color:var(--ink);padding:16px 34px;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;text-decoration:none;transition:all 0.3s;display:inline-block;position:relative;overflow:hidden;}
-.btn-gold::before{content:'';position:absolute;inset:0;background:var(--gold2);transform:translateX(-100%);transition:transform 0.3s;}
-.btn-gold:hover::before{transform:translateX(0);}
-.btn-gold span{position:relative;z-index:1;}
-.btn-wa-hero{background:transparent;color:var(--cream);padding:16px 28px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);transition:all 0.3s;}
-.btn-wa-hero:hover{border-color:#25D366;color:#25D366;}
-.hero-stats{display:flex;gap:0;animation:revealUp 0.8s 2s both;}
-.hstat{padding:0 32px 0 0;margin:0 32px 0 0;border-right:1px solid var(--border);}
-.hstat:last-child{border-right:none;padding-right:0;margin-right:0;}
-.hstat-num{font-family:'Playfair Display',serif;font-size:36px;color:var(--gold);line-height:1;}
-.hstat-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
-.hero-right{position:relative;background:var(--ink2);overflow:hidden;}
-.hero-img-main{width:100%;height:100%;object-fit:cover;filter:brightness(0.55) saturate(0.7);transition:filter 0.8s;}
-.hero-img-overlay{position:absolute;inset:0;background:linear-gradient(to right,var(--ink) 0%,transparent 30%),linear-gradient(to top,rgba(12,11,9,0.6) 0%,transparent 50%);}
-.hero-badge-float{position:absolute;bottom:40px;right:40px;background:rgba(12,11,9,0.9);border:1px solid var(--border);padding:20px 24px;animation:revealUp 1s 2.1s both;}
-.hbf-rating{font-family:'Playfair Display',serif;font-size:32px;color:var(--gold);}
-.hbf-stars{color:var(--gold);font-size:14px;letter-spacing:2px;margin:4px 0;}
-.hbf-text{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
-.hero-tag-float{position:absolute;top:40px;right:40px;background:var(--accent);padding:10px 18px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--white);animation:revealUp 1s 2.2s both;}
-
-@keyframes revealUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-
-/* MARQUEE */
-.marquee-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px 0;overflow:hidden;background:rgba(201,168,76,0.03);}
-.marquee-track{display:flex;gap:55px;animation:marqueeAnim 25s linear infinite;white-space:nowrap;}
-.mitem{font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:3px;color:var(--gold);display:flex;align-items:center;gap:18px;font-style:italic;}
-.msep{width:5px;height:5px;background:var(--gold);transform:rotate(45deg);}
-@keyframes marqueeAnim{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
-/* SECTION COMMONS */
-.sec-pad{padding:90px 7%;}
-.sec-tag{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);font-family:'DM Sans',sans-serif;}
-.sec-title{font-family:'Playfair Display',serif;font-size:clamp(38px,5vw,58px);line-height:1.05;color:var(--cream);margin:10px 0 0;}
-.sec-title em{color:var(--gold);font-style:italic;}
-.sec-line{width:50px;height:1px;background:var(--gold);margin:20px 0 0;}
-
-/* SERVICES */
-.services{background:var(--ink2);}
-.services-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:55px;flex-wrap:wrap;gap:20px;}
-.services-tabs{display:flex;gap:0;border:1px solid var(--border);overflow:hidden;}
-.stab{padding:10px 22px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.3s;border-right:1px solid var(--border);background:transparent;}
-.stab:last-child{border-right:none;}
-.stab.active,.stab:hover{background:var(--gold);color:var(--ink);font-weight:700;}
-.services-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;}
-.service-card{background:var(--ink3);padding:34px 26px;position:relative;overflow:hidden;transition:all 0.35s;cursor:pointer;}
-.service-card::before{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--gold);transition:width 0.4s;}
-.service-card:hover::before{width:100%;}
-.service-card:hover{background:#1a1915;transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,0.5);}
-.sc-num{font-family:'Cormorant Garamond',serif;font-size:42px;color:rgba(201,168,76,0.12);line-height:1;margin-bottom:14px;font-weight:600;}
-.sc-icon{font-size:28px;margin-bottom:12px;}
-.sc-name{font-family:'Playfair Display',serif;font-size:20px;color:var(--cream);margin-bottom:8px;}
-.sc-desc{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:16px;}
-.sc-price{display:flex;align-items:baseline;gap:6px;}
-.sc-price-from{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
-.sc-price-val{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold);}
-.sc-tag{position:absolute;top:16px;right:16px;background:var(--accent);color:var(--white);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;}
-.sc-duration{font-size:10px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:5px;}
-.sc-duration::before{content:'⏱';font-size:10px;}
-
-/* PACKAGES */
-.packages{background:var(--ink);}
-.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:55px;}
-.pkg-card{background:var(--ink2);padding:40px 34px;position:relative;border:1px solid var(--border2);transition:all 0.35s;}
-.pkg-card.featured{background:var(--ink3);border-color:var(--gold);transform:scale(1.03);}
-.pkg-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:700;padding:6px 20px;}
-.pkg-name{font-family:'Playfair Display',serif;font-size:26px;color:var(--cream);margin-bottom:6px;}
-.pkg-price{display:flex;align-items:baseline;gap:4px;margin:18px 0;}
-.pkg-price-val{font-family:'Playfair Display',serif;font-size:48px;color:var(--gold);line-height:1;}
-.pkg-price-rs{font-size:18px;color:var(--muted);font-family:'Playfair Display',serif;}
-.pkg-price-note{font-size:11px;color:var(--muted);}
-.pkg-divider{width:100%;height:1px;background:var(--border);margin:20px 0;}
-.pkg-features{display:flex;flex-direction:column;gap:11px;margin-bottom:28px;}
-.pkg-feat{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);}
-.pkg-feat.included{color:var(--cream);}
-.pkg-feat-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
-.pkg-feat.included .pkg-feat-icon{background:rgba(201,168,76,0.15);color:var(--gold);}
-.pkg-feat.excluded .pkg-feat-icon{background:rgba(107,100,85,0.15);color:var(--muted);}
-.btn-pkg{display:block;text-align:center;padding:14px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;text-decoration:none;transition:all 0.3s;}
-.btn-pkg-outline{border:1px solid var(--border);color:var(--cream);}
-.btn-pkg-outline:hover{border-color:var(--gold);color:var(--gold);}
-.btn-pkg-gold{background:var(--gold);color:var(--ink);}
-.btn-pkg-gold:hover{background:var(--gold2);}
-
-/* GALLERY */
-.gallery{background:var(--ink2);}
-.gallery-filters{display:flex;gap:0;margin:40px 0 3px;border:1px solid var(--border);width:fit-content;}
-.gfilt{padding:10px 22px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.3s;border-right:1px solid var(--border);}
-.gfilt:last-child{border-right:none;}
-.gfilt.active,.gfilt:hover{background:var(--gold);color:var(--ink);font-weight:700;}
-.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:220px;gap:3px;}
-.gallery-item{overflow:hidden;position:relative;cursor:pointer;display:block; /* Added for JS filter */}
-.gallery-item.hide{display:none !important;} /* For JS filter */
-.gallery-item.wide{grid-column:span 2;}
-.gallery-item.tall{grid-row:span 2;}
-.gallery-item img{width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(0.7) grayscale(0.2);transition:all 0.6s;}
-.gallery-item:hover img{filter:brightness(0.8) saturate(1) grayscale(0);transform:scale(1.06);}
-.gallery-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(12,11,9,0.85),transparent 50%);opacity:0;transition:opacity 0.4s;display:flex;align-items:flex-end;padding:20px;}
-.gallery-item:hover .gallery-ov{opacity:1;}
-.gallery-ov-text{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold);}
-.gallery-ov-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
-
-/* BOOKING */
-.booking{background:var(--ink);}
-.booking-inner{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start;}
-.booking-info-title{font-family:'Playfair Display',serif;font-size:clamp(42px,5vw,64px);line-height:0.95;margin:12px 0 20px;}
-.booking-info-title em{color:var(--gold);font-style:italic;}
-.booking-desc{font-size:14px;color:var(--muted);line-height:1.9;margin-bottom:35px;font-weight:300;}
-.booking-features{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);}
-.bfeat{display:flex;align-items:center;gap:18px;padding:20px 22px;border-bottom:1px solid var(--border);transition:background 0.3s;}
-.bfeat:last-child{border-bottom:none;}
-.bfeat:hover{background:rgba(201,168,76,0.04);}
-.bfeat-icon{width:44px;height:44px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.bfeat-name{font-size:13px;color:var(--cream);font-weight:500;}
-.bfeat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-
-/* BOOKING FORM */
-.booking-form{background:var(--ink2);border:1px solid var(--border);padding:44px;}
-.form-heading{font-family:'Playfair Display',serif;font-size:28px;color:var(--cream);margin-bottom:4px;}
-.form-sub{font-size:12px;color:var(--muted);margin-bottom:28px;letter-spacing:0.5px;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.form-group{margin-bottom:12px;}
-.form-label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
-.form-inp{width:100%;padding:13px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:all 0.3s;}
-.form-inp::placeholder{color:var(--muted);}
-.form-inp:focus{border-color:var(--gold);background:rgba(201,168,76,0.04);}
-.form-sel{width:100%;padding:13px 16px;background:rgba(12,11,9,0.9);border:1px solid rgba(201,168,76,0.2);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border 0.3s;appearance:none;cursor:pointer;}
-.form-sel option{background:var(--ink2);color:var(--cream);}
-.form-sel:focus{border-color:var(--gold);}
-.form-textarea{width:100%;padding:13px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:all 0.3s;resize:none;height:80px;}
-.form-textarea:focus{border-color:var(--gold);}
-.form-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
-.form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.btn-form-submit{width:100%;padding:15px;background:var(--gold);color:var(--ink);border:none;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all 0.3s;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn-form-submit:hover{background:var(--gold2);transform:translateY(-2px);}
-.btn-form-wa{width:100%;padding:15px;background:#25D366;color:white;border:none;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all 0.3s;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn-form-wa:hover{background:#1ea855;transform:translateY(-2px);}
-.btn-form-call{width:100%;padding:14px;background:var(--gold);color:var(--ink);border:none;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all 0.3s;}
-.btn-form-call:hover{background:var(--gold2);}
-.form-note{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;letter-spacing:0.5px;}
-
-/* REVIEWS */
-.reviews{background:var(--ink2);}
-.reviews-summary{display:grid;grid-template-columns:260px 1fr;gap:55px;margin:55px 0 3px;align-items:center;}
-.rev-big-num{font-family:'Playfair Display',serif;font-size:88px;color:var(--gold);line-height:1;}
-.rev-big-stars{color:var(--gold);font-size:20px;letter-spacing:4px;margin:4px 0;}
-.rev-big-count{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
-.rev-bars{display:flex;flex-direction:column;gap:8px;}
-.rev-bar-row{display:flex;align-items:center;gap:12px;}
-.rev-bar-num{font-size:12px;color:var(--muted);width:12px;text-align:right;}
-.rev-bar-track{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
-.rev-bar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 1.2s ease;}
-.rev-bar-count{font-size:11px;color:var(--muted);width:25px;}
-.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2px;}
-.rev-card{background:var(--ink3);padding:32px;border-left:2px solid transparent;transition:all 0.35s;position:relative;overflow:hidden;}
-.rev-card::before{content:'❝';position:absolute;top:20px;right:20px;font-size:48px;color:rgba(201,168,76,0.08);font-family:'Playfair Display',serif;line-height:1;}
-.rev-card:hover{border-left-color:var(--gold);background:var(--ink2);}
-.rev-stars{color:var(--gold);font-size:13px;letter-spacing:2px;margin-bottom:14px;}
-.rev-text{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);line-height:1.75;margin-bottom:20px;font-style:italic;font-weight:300;}
-.rev-bottom{display:flex;align-items:center;justify-content:space-between;}
-.rev-user{display:flex;align-items:center;gap:12px;}
-.rev-av{width:38px;height:38px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;color:var(--ink);font-weight:700;}
-.rev-name{font-size:13px;color:var(--cream);font-weight:600;}
-.rev-loc{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;}
-.rev-date{font-size:10px;color:var(--muted);letter-spacing:1px;}
-.rev-badge{background:rgba(201,168,76,0.1);border:1px solid var(--border);color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;margin-top:16px;display:inline-block;}
-
-/* GOOGLE MAPS */
-.map-section{background:var(--ink);}
-.map-inner{display:grid;grid-template-columns:1fr 380px;gap:0;border:1px solid var(--border);overflow:hidden;}
-.map-frame{height:420px;filter:grayscale(0.8) invert(0.9) contrast(0.85);}
-.map-frame iframe{width:100%;height:100%;border:none;display:block;}
-.map-info{background:var(--ink2);padding:44px 36px;display:flex;flex-direction:column;justify-content:space-between;}
-.map-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--cream);margin-bottom:6px;}
-.map-addr{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px;}
-.map-detail{display:flex;flex-direction:column;gap:14px;margin-bottom:28px;}
-.map-det-row{display:flex;align-items:flex-start;gap:12px;}
-.map-det-icon{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:2px;}
-.map-det-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
-.map-det-val{font-size:13px;color:var(--cream);margin-top:2px;font-weight:500;}
-.btn-directions{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--gold);color:var(--ink);padding:13px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;text-decoration:none;transition:all 0.3s;}
-.btn-directions:hover{background:var(--gold2);}
-
-/* CONTACT BAR */
-.cbar-section{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.cbar-item{display:flex;align-items:center;gap:18px;padding:28px 40px;border-right:1px solid var(--border);text-decoration:none;transition:background 0.3s;position:relative;overflow:hidden;}
-.cbar-item::before{content:'';position:absolute;inset:0;background:rgba(201,168,76,0.04);transform:translateX(-100%);transition:transform 0.4s;}
-.cbar-item:hover::before{transform:none;}
-.cbar-item:last-child{border-right:none;}
-.cbar-icon{font-size:24px;flex-shrink:0;}
-.cbar-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
-.cbar-val{font-size:15px;color:var(--cream);font-weight:600;margin-top:3px;}
-
-/* FLOAT BTNS */
-.floats{position:fixed;bottom:28px;right:28px;z-index:200;display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
-.float-wa{width:58px;height:58px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 24px rgba(37,211,102,0.5);animation:floatPulse 2.5s ease infinite;transition:transform 0.3s;}
-.float-wa:hover{transform:scale(1.12);}
-.float-call{width:46px;height:46px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 16px rgba(201,168,76,0.5);transition:transform 0.3s;font-size:18px;}
-.float-call:hover{transform:scale(1.12);}
-@keyframes floatPulse{0%,100%{box-shadow:0 4px 24px rgba(37,211,102,0.4)}50%{box-shadow:0 4px 40px rgba(37,211,102,0.75)}}
-
-/* FOOTER */
-footer{background:var(--ink);border-top:1px solid var(--border);padding:60px 7% 30px;display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:50px;}
-.footer-logo-text{font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);margin-bottom:14px;}
-.footer-logo-text span{color:var(--cream);font-weight:400;}
-.footer-logo-sub{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);}
-.footer-desc{font-size:13px;color:var(--muted);line-height:1.8;margin-top:12px;}
-.footer-socials{display:flex;gap:8px;margin-top:20px;}
-.fsoc{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;text-decoration:none;transition:all 0.3s;color:var(--cream);}
-.fsoc:hover{border-color:var(--gold);background:rgba(201,168,76,0.1);transform:translateY(-2px) scale(1.1);}
-.footer-heading{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
-.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px;}
-.footer-links a{color:var(--muted);text-decoration:none;font-size:13px;transition:color 0.3s;display:flex;align-items:center;gap:8px;}
-.footer-links a::before{content:'—';font-size:10px;color:var(--gold);opacity:0;transition:opacity 0.3s;}
-.footer-links a:hover{color:var(--cream);}
-.footer-links a:hover::before{opacity:1;}
-.footer-bottom{border-top:1px solid var(--border2);padding:22px 7%;display:flex;justify-content:space-between;font-size:11px;color:var(--muted);letter-spacing:1px;}
-
-/* TOAST */
-.toast{position:fixed;bottom:100px;right:28px;background:var(--ink2);border:1px solid var(--gold);padding:16px 22px;font-size:13px;color:var(--cream);z-index:300;transform:translateX(120%);transition:transform 0.4s;border-left:3px solid var(--gold);}
-.toast.show{transform:none;}
-.toast-title{font-weight:600;margin-bottom:3px;}
-.toast-sub{font-size:11px;color:var(--muted);}
-
-/* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;opacity:0;visibility:hidden;transition:all 0.3s;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
-.modal-bg.open{opacity:1;visibility:visible;}
-.modal{background:var(--ink2);border:1px solid var(--border);padding:44px;max-width:500px;width:90%;position:relative;transform:scale(0.95);transition:transform 0.3s;}
-.modal-bg.open .modal{transform:scale(1);}
-.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;transition:color 0.3s;line-height:1;}
-.modal-close:hover{color:var(--cream);}
-.modal-title{font-family:'Playfair Display',serif;font-size:28px;color:var(--cream);margin-bottom:6px;}
-.modal-sub{font-size:12px;color:var(--muted);margin-bottom:24px;}
-.modal-btn-group{display:flex;gap:10px;margin-top:24px;} /* Added for modal buttons */
-
-/* ADMIN PANEL STYLES */
-.admin-panel{background:var(--ink);padding:60px 7%;border-top:1px solid var(--border);display:none;}
-.admin-panel.active{display:block;}
-.admin-login-modal{background:var(--ink2);border:1px solid var(--gold);padding:30px;max-width:350px;margin:50px auto;text-align:center;}
-.admin-login-modal input{width:100%;padding:10px;margin:15px 0;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--cream);font-size:14px;}
-.admin-login-modal button{background:var(--gold);color:var(--ink);padding:10px 20px;border:none;cursor:pointer;font-weight:600;transition:background 0.3s;}
-.admin-login-modal button:hover{background:var(--gold2);}
-.admin-table{width:100%;border-collapse:collapse;margin-top:30px;}
-.admin-table th,.admin-table td{border:1px solid var(--border);padding:12px 15px;text-align:left;font-size:13px;}
-.admin-table th{background:var(--ink3);color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-size:11px;}
-.admin-table td{color:var(--cream2);}
-.admin-table tr:nth-child(even){background:var(--ink2);}
-.admin-table .status-pending{color:orange;}
-.admin-table .status-confirmed{color:#25D366;}
-.admin-table .status-completed{color:var(--gold);}
-.admin-table .btn-action{background:var(--gold);color:var(--ink);border:none;padding:6px 10px;font-size:10px;cursor:pointer;margin-right:5px;transition:background 0.2s;}
-.admin-table .btn-action.delete{background:var(--accent);color:var(--white);}
-.admin-table .btn-action:hover{opacity:0.8;}
-.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
-.admin-warning{background:var(--accent);color:var(--white);padding:15px;margin-bottom:20px;font-size:13px;text-align:center;border-radius:4px;}
-
-/* RESPONSIVE */
-@media(max-width:1024px){
-  .services-grid{grid-template-columns:repeat(2,1fr);}
-  .pkg-grid{grid-template-columns:1fr;}
-  .pkg-card.featured{transform:none;}
-  footer{grid-template-columns:1fr 1fr;}
-  .gallery-grid{grid-template-columns:repeat(2,1fr);}
-  .gallery-item.wide{grid-column:span 1;}
-  .nav-right .btn-nav-call{display:none;}
-}
-@media(max-width:768px){
-  .cursor,.cursor-ring{display:none;}
-  body{cursor:auto;}
-  nav{padding:14px 4%;}
-  .nav-links{display:none;} /* Hide desktop nav links */
-  .hamburger{display:flex;} /* Show hamburger menu */
-  .hero{grid-template-columns:1fr;}
-  .hero-left{padding:70px 5% 40px;}
-  .hero-right{height:300px;}
-  .services-grid{grid-template-columns:1fr;}
-  .reviews-grid{grid-template-columns:1fr;}
-  .reviews-summary{grid-template-columns:1fr;gap:30px;}
-  .map-inner{grid-template-columns:1fr;}
-  .cbar-section{grid-template-columns:1fr;}
-  .cbar-item{border-right:none;border-bottom:1px solid var(--border);}
-  .booking-inner{grid-template-columns:1fr;}
-  footer{grid-template-columns:1fr;gap:30px;}
-  .footer-bottom{flex-direction:column;gap:6px;text-align:center;}
-  .scroll-ind{display:none;}
-  .form-row{grid-template-columns:1fr;}
-  .modal{padding:30px 20px;}
-  .hero-badge-float, .hero-tag-float{right:20px;bottom:20px;padding:15px 18px;font-size:9px;}
-  .hero-tag-float{top:20px;}
-  .sec-pad{padding:60px 5%;}
-  .marquee-track{gap:30px;animation-duration:15s;} /* Faster marquee for less items visible */
-  .ann{padding:8px 5%;font-size:9px;letter-spacing:2px;}
-}
-@media(max-width:480px){
-  .logo{font-size:20px;}
-  .logo em{font-size:9px;letter-spacing:3px;}
-  .nav-right .btn-nav-book{padding:8px 16px;font-size:10px;}
-  .hero-h1{font-size:clamp(48px,10vw,72px);}
-  .hero-number{font-size:10px;letter-spacing:3px;margin-bottom:20px;}
-  .hero-number::before{width:25px;}
-  .hero-sub{font-size:13px;margin-bottom:30px;}
-  .hero-btns a{padding:12px 20px;font-size:10px;}
-  .hstat{padding:0 20px 0 0;margin:0 20px 0 0;}
-  .hstat-num{font-size:28px;}
-  .hstat-label{font-size:8px;letter-spacing:2px;}
-  .services-header{flex-direction:column;align-items:flex-start;}
-  .services-tabs{width:100%;justify-content:center;}
-  .stab{flex:1;text-align:center;padding:10px 10px;}
-  .pkg-card{padding:30px 20px;}
-  .pkg-name{font-size:22px;}
-  .pkg-price-val{font-size:40px;}
-  .gallery-grid{grid-template-columns:1fr;}
-  .map-info{padding:30px 20px;}
-  .cbar-item{padding:20px;}
-  .footer-socials{justify-content:center;}
-  .admin-table th,.admin-table td{padding:8px 10px;font-size:12px;}
-  .admin-table .btn-action{padding:4px 8px;font-size:9px;}
-}
-
-/* SCROLL REVEAL */
-.reveal{opacity:0;transform:translateY(28px);transition:all 0.7s ease;}
-.reveal.visible{opacity:1;transform:none;}
-.reveal-delay-1{transition-delay:0.1s;}
-.reveal-delay-2{transition-delay:0.2s;}
-.reveal-delay-3{transition-delay:0.3s;}
-.reveal-delay-4{transition-delay:0.4s;}
-</style>
+        .input-area { display: flex; padding: 10px; background: #f0f0f0; }
+        input { flex: 1; padding: 15px; border: none; border-radius: 20px; outline: none; margin-right: 10px; }
+        button { padding: 10px 20px; background: #075e54; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight:bold;}
+    </style>
 </head>
 <body>
 
-<!-- CUSTOM CURSOR -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+    <div id="sidebar">
+        <h3>All Patients</h3>
+        <div id="users-list"></div>
+    </div>
 
-<!-- LOADER -->
-<div class="loader" id="loader">
-  <div class="loader-logo">SCISSOR</div>
-  <div class="loader-line"></div>
-  <div class="loader-text">Premium Barber · Multan</div>
-</div>
-
-<!-- SCROLL INDICATOR -->
-<div class="scroll-ind">
-  <div class="scroll-ind-line"></div>
-  <div class="scroll-ind-text">Scroll</div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <div class="toast-title">✅ Booking Request Sent!</div>
-  <div class="toast-sub">Hum jald WhatsApp pe confirm karenge.</div>
-</div>
-
-<!-- QUICK VIEW MODAL -->
-<div class="modal-bg" id="modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-title" id="modal-title">Service</div>
-    <div class="modal-sub" id="modal-sub">Details</div>
-    <div class="modal-btn-group">
-      <a href="#booking" class="btn-gold" style="flex:1;text-align:center;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:14px;" onclick="closeModal(); prefillBookingForm(document.getElementById('modal-title').textContent);"><span>Book Now</span></a>
-      <a href="https://wa.me/923055320253" class="btn-wa-hero" style="flex:1;justify-content:center;font-size:11px;" target="_blank">WhatsApp</a>
-    </div>
-  </div>
-</div>
-
-<!-- ANNOUNCEMENT -->
-<div class="ann">
-  <span style="position:relative;z-index:1">✦ &nbsp;MULTAN KA #1 PREMIUM BARBER SALON &nbsp;·&nbsp; GULGASHT COLONY &nbsp;·&nbsp; OPEN TILL 12 AM DAILY &nbsp;✦</span>
-</div>
-
-<!-- NAV -->
-<nav>
-  <div class="logo">
-    SCISSOR <span>SALON</span>
-    <em>Premium Barber — Multan</em>
-  </div>
-  <div class="hamburger" id="hamburger">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-  <ul class="nav-links" id="desktop-nav-links">
-    <li><a href="#services">Services</a></li>
-    <li><a href="#packages">Packages</a></li>
-    <li><a href="#gallery">Gallery</a></li>
-    <li><a href="#booking">Booking</a></li>
-    <li><a href="#reviews">Reviews</a></li>
-    <li><a href="#location">Location</a></li>
-  </ul>
-  <div class="nav-right">
-    <a href="tel:03055320253" class="btn-nav-call">📞 0305-5320253</a>
-    <a href="#booking" class="btn-nav-book">Book Now</a>
-  </div>
-  <ul class="nav-links-mobile" id="mobile-nav-links">
-    <li><a href="#services" onclick="toggleMobileMenu()">Services</a></li>
-    <li><a href="#packages" onclick="toggleMobileMenu()">Packages</a></li>
-    <li><a href="#gallery" onclick="toggleMobileMenu()">Gallery</a></li>
-    <li><a href="#booking" onclick="toggleMobileMenu()">Booking</a></li>
-    <li><a href="#reviews" onclick="toggleMobileMenu()">Reviews</a></li>
-    <li><a href="#location" onclick="toggleMobileMenu()">Location</a></li>
-    <li><a href="#" onclick="toggleMobileMenu(); adminLoginPrompt();">Admin Panel</a></li>
-  </ul>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg-text">CUT</div>
-  <div class="hero-left">
-    <div class="hero-number">Since 2015 — 10+ Years of Excellence</div>
-    <h1 class="hero-h1">
-      <strong>LOOK</strong>
-      <strong>SHARP.</strong>
-      <em>Stay Bold.</em>
-    </h1>
-    <p class="hero-sub">Multan ke best barbers — premium haircuts, expert beard styling, aur professional grooming. Gulgasht Colony mein aapka trusted salon, Since 2015.</p>
-    <div class="hero-btns">
-      <a href="#booking" class="btn-gold"><span>Book Appointment</span></a>
-      <a href="https://wa.me/923055320253?text=Hi! I want to book an appointment at Scissor Salon" class="btn-wa-hero" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-        WhatsApp
-      </a>
-    </div>
-    <div class="hero-stats">
-      <div class="hstat"><div class="hstat-num">72+</div><div class="hstat-label">Reviews</div></div>
-      <div class="hstat"><div class="hstat-num">4.5★</div><div class="hstat-label">Rating</div></div>
-      <div class="hstat"><div class="hstat-num">10+</div><div class="hstat-label">Yrs Exp</div></div>
-      <div class="hstat" style="border:none"><div class="hstat-num">12 AM</div><div class="hstat-label">Open Till</div></div>
-    </div>
-  </div>
-  <div class="hero-right">
-    <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=900&q=85" alt="Barber" class="hero-img-main">
-    <div class="hero-img-overlay"></div>
-    <div class="hero-tag-float">⚡ WALK-INS WELCOME</div>
-    <div class="hero-badge-float">
-      <div class="hbf-rating">4.5</div>
-      <div class="hbf-stars">★★★★½</div>
-      <div class="hbf-text">72 Google Reviews</div>
-    </div>
-  </div>
-</section>
-
-<!-- MARQUEE -->
-<div class="marquee-wrap">
-  <div class="marquee-track">
-    <div class="mitem"><div class="msep"></div>Premium Haircuts</div>
-    <div class="mitem"><div class="msep"></div>Beard Styling</div>
-    <div class="mitem"><div class="msep"></div>Hair Coloring</div>
-    <div class="mitem"><div class="msep"></div>Head Massage</div>
-    <div class="mitem"><div class="msep"></div>Deep Facial</div>
-    <div class="mitem"><div class="msep"></div>Open Till 12 AM</div>
-    <div class="mitem"><div class="msep"></div>Gulgasht Colony · Multan</div>
-    <div class="mitem"><div class="msep"></div>4.5 Stars · 72 Reviews</div>
-    <div class="mitem"><div class="msep"></div>Premium Haircuts</div>
-    <div class="mitem"><div class="msep"></div>Beard Styling</div>
-    <div class="mitem"><div class="msep"></div>Hair Coloring</div>
-    <div class="mitem"><div class="msep"></div>Head Massage</div>
-    <div class="mitem"><div class="msep"></div>Deep Facial</div>
-    <div class="mitem"><div class="msep"></div>Open Till 12 AM</div>
-    <div class="mitem"><div class="msep"></div>Gulgasht Colony · Multan</div>
-    <div class="mitem"><div class="msep"></div>4.5 Stars · 72 Reviews</div>
-  </div>
-</div>
-
-<!-- SERVICES -->
-<section id="services" class="services sec-pad">
-  <div class="services-header">
-    <div>
-      <div class="sec-tag reveal">✦ What We Offer</div>
-      <h2 class="sec-title reveal reveal-delay-1">Our <em>Services</em></h2>
-      <div class="sec-line reveal reveal-delay-2"></div>
-    </div>
-    <div class="services-tabs reveal reveal-delay-2">
-      <div class="stab active" onclick="filterServices('all',this)">All</div>
-      <div class="stab" onclick="filterServices('hair',this)">Hair</div>
-      <div class="stab" onclick="filterServices('beard',this)">Beard</div>
-      <div class="stab" onclick="filterServices('skin',this)">Skin</div>
-    </div>
-  </div>
-  <div class="services-grid" id="servicesGrid">
-    <div class="service-card reveal" data-cat="hair" onclick="openModal('✂️ Premium Haircut','Classic, fade, undercut, texture cut — every modern style. 30–45 min ka expert cut. Rs. 300 se shuru.')">
-      <div class="sc-num">01</div>
-      <div class="sc-icon">✂️</div>
-      <div class="sc-name">Premium Haircut</div>
-      <div class="sc-desc">Classic, fade, undercut, crop — har style expertly executed. Modern ya traditional, sab kuch available.</div>
-      <div class="sc-price"><span class="sc-price-from">From</span><span class="sc-price-val">Rs. 300</span></div>
-      <div class="sc-duration">30–45 min</div>
-    </div>
-    <div class="service-card reveal reveal-delay-1" data-cat="beard" onclick="openModal('🧔 Beard Styling','Trim, shape, line-up, hot towel shave — complete beard grooming. Rs. 200 se shuru.')">
-      <div class="sc-num">02</div>
-      <div class="sc-icon">🧔</div>
-      <div class="sc-name">Beard Styling</div>
-      <div class="sc-desc">Trim, shape, line-up, hot towel shave — professional beard grooming jo face ko define kare.</div>
-      <div class="sc-price"><span class="sc-price-from">From</span><span class="sc-price-val">Rs. 200</span></div>
-      <div class="sc-duration">20–30 min</div>
-    </div>
-    <div class="service-card reveal reveal-delay-2" data-cat="hair" onclick="openModal('🎨 Hair Coloring','Natural black se bold highlights tak — premium quality color. Patch test free. Rs. 800 se shuru.')">
-      <div class="sc-num">03</div>
-      <div class="sc-icon">🎨</div>
-      <div class="sc-name">Hair Coloring</div>
-      <div class="sc-desc">Natural black, highlights, ombre, streaks — premium salon grade color. Natural se bold tak.</div>
-      <div class="sc-price"><span class="sc-price-from">From</span><span class="sc-price-val">Rs. 800</span></div>
-      <div class="sc-duration">45–90 min</div>
-      <div class="sc-tag">Popular</div>
-    </div>
-    <div class="service-card reveal reveal-delay-3" data-cat="skin" onclick="openModal('💆 Head Massage','Deep relaxing scalp massage with premium oils. Stress relief aur hair growth ke liye. Rs. 300 se shuru.')">
-      <div class="sc-num">04</div>
-      <div class="sc-icon">💆</div>
-      <div class="sc-name">Head Massage</div>
-      <div class="sc-desc">Deep scalp massage with premium oils — stress relief, relaxation, aur hair health ke liye.</div>
-      <div class="sc-price"><span class="sc-price-from">From</span><span class="sc-price-val">Rs. 300</span></div>
-      <div class="sc-duration">20–30 min</div>
-    </div>
-    <div class="service-card reveal" data-cat="skin" onclick="openModal('🧴 Deep Facial','Deep cleansing, scrub, steam, face pack — professional skin treatment. Rs. 500 se shuru.')">
-      <div class="sc-num">05</div>
-      <div class="sc-icon">🧴</div>
-      <div class="sc-name">Deep Facial</div>
-      <div class="sc-desc">Cleansing, steam, scrub, face pack, moisturizer — complete skin care treatment. Fresh glow guaranteed.</div>
-      <div class="sc-price"><span class="sc-price-from">From</span><span class="sc-price-val">Rs. 500</span></div>
-      <div class="sc-duration">40–50 min</div>
-    </div>
-    <div class="service-card reveal reveal-delay-1" data-cat="hair" onclick="openModal('💈 Kids Haircut','5 se 12 saal ke bacchon ke liye special haircut. Patience aur care ke sath. Rs. 250 se shuru.')">
-      <div class="sc-num">06</div>
-      <div class="sc-icon">💈</div>
-      <div class="sc-name">Kids Haircut</div>
-      <div class="sc-desc">Bache ke liye patient aur careful cutting. Fun atmosphere, quick service, perfect results.</div>
-      <div class="sc-price"><span class="sc-price-from">From</span><span class="sc-price-val">Rs. 250</span></div>
-      <div class="sc-duration">20–30 min</div>
-    </div>
-    <div class="service-card reveal reveal-delay-2" data-cat="beard" onclick="openModal('🪒 Hot Towel Shave','Traditional straight razor shave with hot towels. Classic barbershop experience. Rs. 350 se shuru.')">
-      <div class="sc-num">07</div>
-      <div class="sc-icon">🪒</div>
-      <div class="sc-name">Hot Towel Shave</div>
-      <div class="sc-desc">Traditional straight razor shave — hot towels, shaving cream, precision blade. Classic premium experience.</div>
-      <div class="sc-price"><span class="sc-price-from">From</span><span class="sc-price-val">Rs. 350</span></div>
-      <div class="sc-duration">25–35 min</div>
-      <div class="sc-tag">Premium</div>
-    </div>
-    <div class="service-card reveal reveal-delay-3" data-cat="hair" onclick="openModal('✨ Hair Treatment','Keratin, protein treatment, dandruff removal — professional hair care. Rs. 600 se shuru.')">
-      <div class="sc-num">08</div>
-      <div class="sc-icon">✨</div>
-      <div class="sc-name">Hair Treatment</div>
-      <div class="sc-desc">Dandruff removal, protein treatment, oil treatment — healthy hair ke liye professional care.</div>
-      <div class="sc-price"><span class="sc-price-from">From</span><span class="sc-price-val">Rs. 600</span></div>
-      <div class="sc-duration">30–60 min</div>
-    </div>
-  </div>
-</section>
-
-<!-- PACKAGES -->
-<section id="packages" class="packages sec-pad">
-  <div style="text-align:center;margin-bottom:10px;">
-    <div class="sec-tag reveal">✦ Value Deals</div>
-    <h2 class="sec-title reveal reveal-delay-1">Grooming <em>Packages</em></h2>
-    <div class="sec-line reveal reveal-delay-2" style="margin:18px auto 0;"></div>
-    <p style="font-size:13px;color:var(--muted);margin-top:16px;font-weight:300;" class="reveal reveal-delay-3">Best value combos — single service se zyada savings</p>
-  </div>
-  <div class="pkg-grid">
-    <div class="pkg-card reveal">
-      <div class="pkg-name">Basic</div>
-      <div style="font-size:12px;color:var(--muted);font-weight:300;">Entry Level Package</div>
-      <div class="pkg-price">
-        <div class="pkg-price-rs">Rs.</div>
-        <div class="pkg-price-val">500</div>
-        <div class="pkg-price-note">/visit</div>
-      </div>
-      <div class="pkg-divider"></div>
-      <div class="pkg-features">
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>✂️ Haircut (Any Style)</div>
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>🧔 Basic Beard Trim</div>
-        <div class="pkg-feat excluded"><div class="pkg-feat-icon">✕</div>💆 Head Massage</div>
-        <div class="pkg-feat excluded"><div class="pkg-feat-icon">✕</div>🧴 Facial</div>
-        <div class="pkg-feat excluded"><div class="pkg-feat-icon">✕</div>✨ Hair Treatment</div>
-      </div>
-      <a href="#booking" class="btn-pkg btn-pkg-outline" onclick="prefillBookingForm('⭐ Basic Package — Rs. 500')">Book Basic</a>
-    </div>
-    <div class="pkg-card featured reveal reveal-delay-1">
-      <div class="pkg-badge">Most Popular</div>
-      <div class="pkg-name">Classic</div>
-      <div style="font-size:12px;color:var(--muted);font-weight:300;">Best Value Package</div>
-      <div class="pkg-price">
-        <div class="pkg-price-rs">Rs.</div>
-        <div class="pkg-price-val">900</div>
-        <div class="pkg-price-note">/visit • Save Rs. 200</div>
-      </div>
-      <div class="pkg-divider"></div>
-      <div class="pkg-features">
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>✂️ Haircut (Any Style)</div>
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>🧔 Beard Styling + Shape</div>
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>💆 Head Massage</div>
-        <div class="pkg-feat excluded"><div class="pkg-feat-icon">✕</div>🧴 Facial</div>
-        <div class="pkg-feat excluded"><div class="pkg-feat-icon">✕</div>✨ Hair Treatment</div>
-      </div>
-      <a href="#booking" class="btn-pkg btn-pkg-gold" onclick="prefillBookingForm('👑 Classic Package — Rs. 900')">Book Classic</a>
-    </div>
-    <div class="pkg-card reveal reveal-delay-2">
-      <div class="pkg-name">Premium</div>
-      <div style="font-size:12px;color:var(--muted);font-weight:300;">Full Grooming Experience</div>
-      <div class="pkg-price">
-        <div class="pkg-price-rs">Rs.</div>
-        <div class="pkg-price-val">1,500</div>
-        <div class="pkg-price-note">/visit • Save Rs. 400</div>
-      </div>
-      <div class="pkg-divider"></div>
-      <div class="pkg-features">
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>✂️ Haircut (Any Style)</div>
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>🧔 Premium Beard Styling</div>
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>💆 Head Massage</div>
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>🧴 Deep Facial</div>
-        <div class="pkg-feat included"><div class="pkg-feat-icon">✓</div>✨ Hair Treatment</div>
-      </div>
-      <a href="#booking" class="btn-pkg btn-pkg-outline" onclick="prefillBookingForm('💎 Premium Package — Rs. 1,500')">Book Premium</a>
-    </div>
-  </div>
-</section>
-
-<!-- GALLERY -->
-<section id="gallery" class="gallery sec-pad">
-  <div>
-    <div class="sec-tag reveal">✦ Our Work</div>
-    <h2 class="sec-title reveal reveal-delay-1">Style <em>Gallery</em></h2>
-    <div class="sec-line reveal reveal-delay-2"></div>
-    <div class="gallery-filters reveal reveal-delay-2">
-      <div class="gfilt active" onclick="filterGallery('all',this)">All Work</div>
-      <div class="gfilt" onclick="filterGallery('haircut',this)">Haircuts</div>
-      <div class="gfilt" onclick="filterGallery('beard',this)">Beards</div>
-      <div class="gfilt" onclick="filterGallery('style',this)">Styling</div>
-    </div>
-  </div>
-  <div class="gallery-grid">
-    <div class="gallery-item wide tall reveal" data-gcat="haircut">
-      <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=700&q=80" alt="Classic Cut">
-      <div class="gallery-ov">
-        <div><div class="gallery-ov-text">Classic Haircut</div><div class="gallery-ov-sub">Scissor Cut Technique</div></div>
-      </div>
-    </div>
-    <div class="gallery-item reveal reveal-delay-1" data-gcat="haircut">
-      <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&q=80" alt="Fade">
-      <div class="gallery-ov">
-        <div><div class="gallery-ov-text">Skin Fade</div><div class="gallery-ov-sub">Modern Barbering</div></div>
-      </div>
-    </div>
-    <div class="gallery-item reveal reveal-delay-2" data-gcat="beard">
-      <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&q=80" alt="Beard">
-      <div class="gallery-ov">
-        <div><div class="gallery-ov-text">Beard Shaping</div><div class="gallery-ov-sub">Precision Styling</div></div>
-      </div>
-    </div>
-    <div class="gallery-item wide reveal reveal-delay-1" data-gcat="style">
-      <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=700&q=80" alt="Style">
-      <div class="gallery-ov">
-        <div><div class="gallery-ov-text">Premium Styling</div><div class="gallery-ov-sub">Hair Artistry</div></div>
-      </div>
-    </div>
-    <div class="gallery-item reveal reveal-delay-2" data-gcat="haircut">
-      <img src="https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&q=80" alt="Modern">
-      <div class="gallery-ov">
-        <div><div class="gallery-ov-text">Modern Cut</div><div class="gallery-ov-sub">Contemporary Style</div></div>
-      </div>
-    </div>
-    <div class="gallery-item reveal reveal-delay-3" data-gcat="beard">
-      <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=400&q=80" alt="Barber">
-      <div class="gallery-ov">
-        <div><div class="gallery-ov-text">Craft in Action</div><div class="gallery-ov-sub">Master Barber</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- BOOKING -->
-<section id="booking" class="booking sec-pad">
-  <div class="booking-inner">
-    <div class="reveal">
-      <div class="sec-tag">✦ Reserve Your Spot</div>
-      <h2 class="booking-info-title">Book Your<br><em>Appointment</em></h2>
-      <div class="sec-line"></div>
-      <p class="booking-desc" style="margin-top:20px;">WhatsApp pe quick message bhejo ya call karo — hum appointment confirm karenge. Walk-in bhi welcome hai. No waiting guaranteed.</p>
-      <div class="booking-features">
-        <div class="bfeat">
-          <div class="bfeat-icon">⏰</div>
-          <div><div class="bfeat-name">Open Till 12 AM</div><div class="bfeat-sub">7 days a week — late night visits available</div></div>
+    <div id="chat-area">
+        <div id="chat-header">
+            <div id="header-name">Select a patient</div>
+            <span id="header-email"></span>
         </div>
-        <div class="bfeat">
-          <div class="bfeat-icon">📍</div>
-          <div><div class="bfeat-name">Gulgasht Colony, Multan</div><div class="bfeat-sub">1 Shahid Latif St, C Block — easy access</div></div>
+        <div id="chat-box"></div>
+        <div class="input-area">
+            <input type="text" id="msg-input" placeholder="Type your reply..." disabled>
+            <button id="send-btn" disabled>Send</button>
         </div>
-        <div class="bfeat">
-          <div class="bfeat-icon">⚡</div>
-          <div><div class="bfeat-name">Walk-in Welcome</div><div class="bfeat-sub">Appointment ya seedha aa jao — both welcome</div></div>
-        </div>
-        <div class="bfeat">
-          <div class="bfeat-icon">💰</div>
-          <div><div class="bfeat-name">Transparent Pricing</div><div class="bfeat-sub">No hidden charges — jo batao wohi lagta hai</div></div>
-        </div>
-      </div>
     </div>
-    <div class="booking-form reveal reveal-delay-2">
-      <div class="form-heading">Book Now</div>
-      <div class="form-sub">Form fill karo aur hum WhatsApp pe confirm karenge within minutes</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Your Name *</label>
-          <input type="text" class="form-inp" placeholder="Muhammad Ali" id="f-name">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Phone Number *</label>
-          <input type="tel" class="form-inp" placeholder="03xx-xxxxxxx" id="f-phone">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Service Category</label>
-        <select class="form-sel" id="f-category" onchange="updateServiceOptions()">
-          <option value="">— Select Category —</option>
-          <option value="hair">✂️ Hair Services</option>
-          <option value="beard">🧔 Beard & Shave</option>
-          <option value="skin">🧴 Skin & Massage</option>
-          <option value="package">👑 Full Packages</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Service *</label>
-        <select class="form-sel" id="f-service" required>
-          <option value="">— Select Service —</option>
-          <!-- Options will be dynamically populated -->
-        </select>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Preferred Date</label>
-          <input type="date" class="form-inp" id="f-date">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Preferred Time</label>
-          <select class="form-sel" id="f-time">
-            <option value="">Select Time</option>
-            <option>Morning (10 AM – 12 PM)</option>
-            <option>Afternoon (12 PM – 4 PM)</option>
-            <option>Evening (4 PM – 8 PM)</option>
-            <option>Night (8 PM – 12 AM)</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Special Request</label>
-        <textarea class="form-textarea" placeholder="Koi special request ya style reference likho..." id="f-notes"></textarea>
-      </div>
-      <button class="btn-form-submit" onclick="submitBooking(false)">
-        Submit Booking
-      </button>
-      <div class="form-divider">OR</div>
-      <button class="btn-form-wa" onclick="submitBooking(true)">
-        <i class="fab fa-whatsapp"></i>
-        Confirm via WhatsApp
-      </button>
-      <button class="btn-form-call" onclick="window.location='tel:03055320253'">📞 Call: 0305-5320253</button>
-      <div class="form-note">✓ Free consultation &nbsp; ✓ No booking fee &nbsp; ✓ Instant confirmation</div>
-    </div>
-  </div>
-</section>
 
-<!-- REVIEWS -->
-<section id="reviews" class="reviews sec-pad">
-  <div class="sec-tag reveal">✦ 72 Verified Reviews</div>
-  <h2 class="sec-title reveal reveal-delay-1">What Clients <em>Say</em></h2>
-  <div class="sec-line reveal reveal-delay-2"></div>
-  <div class="reviews-summary reveal">
-    <div>
-      <div class="rev-big-num">4.5</div>
-      <div class="rev-big-stars">★★★★½</div>
-      <div class="rev-big-count">72 Google Reviews</div>
-    </div>
-    <div class="rev-bars">
-      <div class="rev-bar-row">
-        <div class="rev-bar-num">5</div>
-        <div class="rev-bar-track"><div class="rev-bar-fill" style="width:78%"></div></div>
-        <div class="rev-bar-count">56</div>
-      </div>
-      <div class="rev-bar-row">
-        <div class="rev-bar-num">4</div>
-        <div class="rev-bar-track"><div class="rev-bar-fill" style="width:14%"></div></div>
-        <div class="rev-bar-count">10</div>
-      </div>
-      <div class="rev-bar-row">
-        <div class="rev-bar-num">3</div>
-        <div class="rev-bar-track"><div class="rev-bar-fill" style="width:5%"></div></div>
-        <div class="rev-bar-count">4</div>
-      </div>
-      <div class="rev-bar-row">
-        <div class="rev-bar-num">2</div>
-        <div class="rev-bar-track"><div class="rev-bar-fill" style="width:2%"></div></div>
-        <div class="rev-bar-count">1</div>
-      </div>
-      <div class="rev-bar-row">
-        <div class="rev-bar-num">1</div>
-        <div class="rev-bar-track"><div class="rev-bar-fill" style="width:1%"></div></div>
-        <div class="rev-bar-count">1</div>
-      </div>
-    </div>
-  </div>
-  <div class="reviews-grid">
-    <div class="rev-card reveal">
-      <div class="rev-stars">★★★★★</div>
-      <div class="rev-text">"Best haircut in Multan without any doubt. Barber ne exactly waisa cut diya jaise main chahta tha. Bohot professional aur clean environment."</div>
-      <div class="rev-bottom">
-        <div class="rev-user">
-          <div class="rev-av">A</div>
-          <div><div class="rev-name">Ahmed Raza</div><div class="rev-loc">Gulgasht Colony</div></div>
-        </div>
-        <div class="rev-date">Jan 2025</div>
-      </div>
-      <div class="rev-badge">✓ Google Review</div>
-    </div>
-    <div class="rev-card reveal reveal-delay-1">
-      <div class="rev-stars">★★★★★</div>
-      <div class="rev-text">"Beard styling ekdum kamaal thi. Rate bhi bohot reasonable hain aur salon ka environment bhi acha hai. Definitely recommend karunga sab ko!"</div>
-      <div class="rev-bottom">
-        <div class="rev-user">
-          <div class="rev-av">U</div>
-          <div><div class="rev-name">Usman Khan</div><div class="rev-loc">Multan</div></div>
-        </div>
-        <div class="rev-date">Dec 2024</div>
-      </div>
-      <div class="rev-badge">✓ Google Review</div>
-    </div>
-    <div class="rev-card reveal reveal-delay-2">
-      <div class="rev-stars">★★★★★</div>
-      <div class="rev-text">"Raat ko late bhi open hote hain — yeh cheez bohot kaam aati hai. Staff friendly hai aur kaam bhi perfect. 10/10 experience every single time."</div>
-      <div class="rev-bottom">
-        <div class="rev-user">
-          <div class="rev-av">Z</div>
-          <div><div class="rev-name">Zain Abbas</div><div class="rev-loc">Multan</div></div>
-        </div>
-        <div class="rev-date">Nov 2024</div>
-      </div>
-      <div class="rev-badge">✓ Google Review</div>
-    </div>
-    <div class="rev-card reveal">
-      <div class="rev-stars">★★★★★</div>
-      <div class="rev-text">"Hair color karwaya tha — ekdum natural aur perfect tha. Quality products use karte hain aur barber ka haath bohot acha hai. Highly recommended!"</div>
-      <div class="rev-bottom">
-        <div class="rev-user">
-          <div class="rev-av">S</div>
-          <div><div class="rev-name">Saqib Hassan</div><div class="rev-loc">Multan</div></div>
-        </div>
-        <div class="rev-date">Oct 2024</div>
-      </div>
-      <div class="rev-badge">✓ Google Review</div>
-    </div>
-    <div class="rev-card reveal reveal-delay-1">
-      <div class="rev-stars">★★★★½</div>
-      <div class="rev-text">"Premium package liya tha — haircut, beard aur massage sab included. Paise wasool the bilkul. Salon mein cleanliness ka khaas khayal rakha jaata hai."</div>
-      <div class="rev-bottom">
-        <div class="rev-user">
-          <div class="rev-av">M</div>
-          <div><div class="rev-name">Muhammad Bilal</div><div class="rev-loc">Vehari Road, Multan</div></div>
-        </div>
-        <div class="rev-date">Sep 2024</div>
-      </div>
-      <div class="rev-badge">✓ Google Review</div>
-    </div>
-    <div class="rev-card reveal reveal-delay-2">
-      <div class="rev-stars">★★★★★</div>
-      <div class="rev-text">"10 saal se aa raha hoon yahan — quality kabhi kam nahi hui. Staff consistent hai aur pricing bhi fair hai. Multan ka best barber, koi shak nahi."</div>
-      <div class="rev-bottom">
-        <div class="rev-user">
-          <div class="rev-av">T</div>
-          <div><div class="rev-name">Tariq Mehmood</div><div class="rev-loc">Gulgasht Colony</div></div>
-        </div>
-        <div class="rev-date">Aug 2024</div>
-      </div>
-      <div class="rev-badge">✓ Google Review</div>
-    </div>
-  </div>
-</section>
+    <audio id="notify-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
-<!-- LOCATION / MAP -->
-<section id="location" class="map-section sec-pad">
-  <div class="sec-tag reveal">✦ Find Us</div>
-  <h2 class="sec-title reveal reveal-delay-1">Our <em>Location</em></h2>
-  <div class="sec-line reveal reveal-delay-2"></div>
-  <div class="map-inner" style="margin-top:40px;">
-    <div class="map-frame">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3472.6!2d71.4753!3d30.1875!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x393b33c1234567%3A0xabc123!2sGulgasht+Colony%2C+Multan%2C+Punjab%2C+Pakistan!5e0!3m2!1sen!2s!4v1700000000000" allowfullscreen="" loading="lazy"></iframe>
-    </div>
-    <div class="map-info">
-      <div>
-        <div class="map-title">Scissor Hair Salon</div>
-        <div class="map-addr">1 Shahid Latif Street, C Block,<br>Gulgasht Colony, Multan, Punjab</div>
-        <div class="map-detail">
-          <div class="map-det-row">
-            <div class="map-det-icon">⏰</div>
-            <div>
-              <div class="map-det-label">Opening Hours</div>
-              <div class="map-det-val">Daily: 10:00 AM – 12:00 AM</div>
-            </div>
-          </div>
-          <div class="map-det-row">
-            <div class="map-det-icon">📞</div>
-            <div>
-              <div class="map-det-label">Phone / WhatsApp</div>
-              <div class="map-det-val">0305-5320253</div>
-            </div>
-          </div>
-          <div class="map-det-row">
-            <div class="map-det-icon">🅿️</div>
-            <div>
-              <div class="map-det-label">Parking</div>
-              <div class="map-det-val">Free parking available outside</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <a href="https://maps.google.com/?q=Gulgasht+Colony+Multan" class="btn-directions" target="_blank">
-        📍 Get Directions
-      </a>
-    </div>
-  </div>
-</section>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, push, set, onChildAdded, onChildChanged, onValue, update, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-<!-- CONTACT BAR -->
-<div class="cbar-section">
-  <a href="https://wa.me/923055320253" class="cbar-item" target="_blank">
-    <div class="cbar-icon"><i class="fab fa-whatsapp"></i></div>
-    <div><div class="cbar-label">WhatsApp Us</div><div class="cbar-val">0305-5320253</div></div>
-  </a>
-  <a href="tel:03055320253" class="cbar-item">
-    <div class="cbar-icon"><i class="fas fa-phone"></i></div>
-    <div><div class="cbar-label">Call Direct</div><div class="cbar-val">0305-5320253</div></div>
-  </a>
-  <a href="https://maps.google.com/?q=Gulgasht+Colony+Multan" class="cbar-item" target="_blank">
-    <div class="cbar-icon"><i class="fas fa-map-marker-alt"></i></div>
-    <div><div class="cbar-label">Our Location</div><div class="cbar-val">Gulgasht Colony, Multan</div></div>
-  </a>
-</div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDulYuUV4Km2e67SSzveNl9poq90-EhkU8",
+            authDomain: "zigzoog-5708f.firebaseapp.com",
+            databaseURL: "https://zigzoog-5708f-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "zigzoog-5708f"
+        };
 
-<!-- FLOAT BTNS -->
-<div class="floats">
-  <a href="https://wa.me/923055320253?text=Hi! I want to book an appointment at Scissor Salon" class="float-wa" target="_blank">
-    <i class="fab fa-whatsapp" style="font-size:26px; color: white;"></i>
-  </a>
-  <a href="tel:03055320253" class="float-call"><i class="fas fa-phone"></i></a>
-</div>
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-<!-- FOOTER -->
-<footer>
-  <div>
-    <div class="footer-logo-text">SCISSOR <span>SALON</span></div>
-    <div class="footer-logo-sub">Premium Barber · Since 2015</div>
-    <p class="footer-desc">Multan ka premium barber salon — professional cuts, expert beard styling, aur top grooming. Gulgasht Colony mein aapka trusted destination Since 2015.</p>
-    <div class="footer-socials">
-      <a href="https://facebook.com" target="_blank" class="fsoc"><i class="fab fa-facebook-f"></i></a>
-      <a href="https://instagram.com" target="_blank" class="fsoc"><i class="fab fa-instagram"></i></a>
-      <a href="https://wa.me/923055320253" target="_blank" class="fsoc"><i class="fab fa-whatsapp"></i></a>
-      <a href="https://youtube.com" target="_blank" class="fsoc"><i class="fab fa-youtube"></i></a>
-      <a href="https://tiktok.com" target="_blank" class="fsoc"><i class="fab fa-tiktok"></i></a>
-      <a href="https://x.com" target="_blank" class="fsoc"><i class="fab fa-x-twitter"></i></a>
-      <a href="https://snapchat.com" target="_blank" class="fsoc"><i class="fab fa-snapchat-ghost"></i></a>
-    </div>
-  </div>
-  <div>
-    <div class="footer-heading">Services</div>
-    <ul class="footer-links">
-      <li><a href="#services">Haircut</a></li>
-      <li><a href="#services">Beard Styling</a></li>
-      <li><a href="#services">Hair Coloring</a></li>
-      <li><a href="#services">Deep Facial</a></li>
-      <li><a href="#services">Head Massage</a></li>
-      <li><a href="#services">Hot Towel Shave</a></li>
-    </ul>
-  </div>
-  <div>
-    <div class="footer-heading">Packages</div>
-    <ul class="footer-links">
-      <li><a href="#packages">Basic — Rs. 500</a></li>
-      <li><a href="#packages">Classic — Rs. 900</a></li>
-      <li><a href="#packages">Premium — Rs. 1,500</a></li>
-    </ul>
-  </div>
-  <div>
-    <div class="footer-heading">Contact</div>
-    <ul class="footer-links">
-      <li><a href="tel:03055320253">📞 0305-5320253</a></li>
-      <li><a href="https://wa.me/923055320253">💬 WhatsApp</a></li>
-      <li><a href="#location">📍 Gulgasht Colony</a></li>
-      <li><a href="#location">⏰ 10 AM – 12 AM Daily</a></li>
-      <li><a href="#" onclick="adminLoginPrompt()">🔑 Admin Panel</a></li>
-    </ul>
-  </div>
-</footer>
-<div class="footer-bottom">
-  <span>© 2025 Scissor Hair Salon · Multan, Punjab</span>
-  <span>Developed by SkyEagle Digital Agency</span>
-</div>
+        let activeUserId = null;
+        let unsubscribeChatAdd = null;
+        let unsubscribeChatChange = null;
 
-<!-- ADMIN PANEL SECTION (Client-side simulation using localStorage) -->
-<section id="admin-panel" class="admin-panel">
-  <div class="sec-tag">✦ Admin Area</div>
-  <h2 class="sec-title">Manage <em>Bookings</em></h2>
-  <div class="sec-line"></div>
-  <div class="admin-warning">
-    <strong>⚠️ WARNING: THIS IS A CLIENT-SIDE DEMO ADMIN PANEL.</strong>
-    Bookings are stored only in your browser's local storage and are not secure.
-    For a real website, a proper backend with a database and secure authentication is required.
-  </div>
-  <div class="admin-header">
-    <button class="btn-nav-book" onclick="logoutAdmin()">Logout</button>
-    <button class="btn-nav-book" onclick="clearAllBookings()">Clear All Bookings</button>
-  </div>
-  <table class="admin-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Service</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Notes</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="admin-bookings-table">
-      <!-- Bookings will be rendered here -->
-    </tbody>
-  </table>
-</section>
+        function formatTime(timestamp) {
+            if(!timestamp) return "";
+            return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
 
-<script>
-// --- CORE JS ---
+        // 1. Fetch Users List in Realtime
+        onValue(ref(db, 'users_list'), (snapshot) => {
+            const usersListDiv = document.getElementById('users-list');
+            usersListDiv.innerHTML = ""; 
 
-// LOADER
-window.addEventListener('load', () => {
-  setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 1800);
-});
+            let usersArray = [];
+            snapshot.forEach(child => { usersArray.push({ id: child.key, ...child.val() }); });
+            
+            // Sort: Naya message wala upar
+            usersArray.sort((a, b) => (b.lastMessageTime || 0) - (a.lastMessageTime || 0));
 
-// CUSTOM CURSOR
-const cursor = document.getElementById('cursor');
-const ring = document.getElementById('cursorRing');
-document.addEventListener('mousemove', e => {
-  cursor.style.left = e.clientX - 5 + 'px';
-  cursor.style.top = e.clientY - 5 + 'px';
-  ring.style.left = e.clientX - 18 + 'px';
-  ring.style.top = e.clientY - 18 + 'px';
-});
-document.querySelectorAll('a,button,.service-card,.gallery-item,.stab,.gfilt, .hamburger').forEach(el => {
-  el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2)'; ring.style.transform = 'scale(1.4)'; });
-  el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; });
-});
+            usersArray.forEach(user => {
+                const div = document.createElement('div');
+                div.classList.add('user-item');
+                if (user.id === activeUserId) div.classList.add('active-user');
+                
+                let badgeStyle = (user.unreadCountAdmin > 0) ? "display: inline-block;" : "display: none;";
+                
+                // Sound notification
+                if(user.unreadCountAdmin > 0 && user.id !== activeUserId) {
+                     document.getElementById('notify-sound').play().catch(()=>{});
+                }
 
-// SCROLL REVEAL
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-}, { threshold: 0.08 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+                div.innerHTML = `
+                    <div class="user-info">
+                        <span class="user-name">${user.name}</span>
+                        <span class="last-msg">${user.lastMessageText || "No messages yet."}</span>
+                    </div>
+                    <div class="meta-info">
+                        <span class="time">${formatTime(user.lastMessageTime)}</span>
+                        <span class="badge" style="${badgeStyle}">${user.unreadCountAdmin}</span>
+                    </div>
+                `;
+                div.onclick = () => loadChat(user.id, user.name, user.email);
+                usersListDiv.appendChild(div);
+            });
+        });
 
-// NAV ACTIVE LINK ON SCROLL
-const sections = document.querySelectorAll('section, #admin-panel'); // Include admin panel for nav highlighting
-const navLinks = document.querySelectorAll('.nav-links a, .nav-links-mobile a');
+        // 2. Load Chat for specific User
+        function loadChat(userId, userName, userEmail) {
+            activeUserId = userId;
+            
+            document.getElementById('header-name').innerText = userName;
+            document.getElementById('header-email').innerText = userEmail;
+            document.getElementById('msg-input').disabled = false;
+            document.getElementById('send-btn').disabled = false;
+            document.getElementById('chat-box').innerHTML = ""; 
 
-window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(section => {
-    const sectionTop = section.offsetTop;
-    const sectionHeight = section.clientHeight;
-    if (pageYOffset >= sectionTop - sectionHeight / 3) { // Adjusted threshold for better highlighting
-      current = section.getAttribute('id');
-    }
-  });
+            // Clear red dot notification
+            update(ref(db, `users_list/${userId}`), { unreadCountAdmin: 0 });
 
-  navLinks.forEach(link => {
-    link.classList.remove('active');
-    if (link.getAttribute('href') && link.getAttribute('href').includes(current)) {
-      link.classList.add('active');
-    }
-  });
-});
+            if (unsubscribeChatAdd) unsubscribeChatAdd();
+            if (unsubscribeChatChange) unsubscribeChatChange();
 
-// HAMBURGER MENU
-const hamburger = document.getElementById('hamburger');
-const mobileNavLinks = document.getElementById('mobile-nav-links');
+            // Load Msgs
+            unsubscribeChatAdd = onChildAdded(ref(db, `chats/${userId}`), (snapshot) => {
+                const msgId = snapshot.key;
+                const data = snapshot.val();
+                renderMessage(msgId, data);
 
-function toggleMobileMenu() {
-  hamburger.classList.toggle('open');
-  mobileNavLinks.classList.toggle('open');
-}
-hamburger.addEventListener('click', toggleMobileMenu);
+                // Admin seen the user's message
+                if (data.sender === 'user' && data.status === 'sent') {
+                    update(ref(db, `chats/${userId}/${msgId}`), { status: 'read' });
+                }
+            });
 
-// --- SERVICES & GALLERY FILTERS ---
+            // Blue Ticks listener
+            unsubscribeChatChange = onChildChanged(ref(db, `chats/${userId}`), (snapshot) => {
+                const data = snapshot.val();
+                const ticksSpan = document.getElementById(`ticks-${snapshot.key}`);
+                if (ticksSpan && data.status === 'read') ticksSpan.classList.add('blue-ticks');
+            });
+        }
 
-// SERVICE FILTER
-function filterServices(cat, el) {
-  document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  const serviceCards = document.querySelectorAll('.service-card');
-  serviceCards.forEach(card => {
-    if (cat === 'all' || card.dataset.cat === cat) {
-      card.style.display = 'block';
-      setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 10);
-    } else {
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(10px)';
-      setTimeout(() => { card.style.display = 'none'; }, 300);
-    }
-  });
-}
+        // 3. Send Message
+        document.getElementById('send-btn').addEventListener('click', () => {
+            const input = document.getElementById('msg-input');
+            if (input.value.trim() !== "" && activeUserId) {
+                const newMsgRef = push(ref(db, `chats/${activeUserId}`));
+                set(newMsgRef, { sender: 'admin', text: input.value, status: 'sent', timestamp: Date.now() });
 
-// GALLERY FILTER
-function filterGallery(cat, el) {
-  document.querySelectorAll('.gfilt').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  const galleryItems = document.querySelectorAll('.gallery-item');
-  galleryItems.forEach(item => {
-    if (cat === 'all' || item.dataset.gcat === cat) {
-      item.classList.remove('hide'); // Show item
-      item.style.opacity = '1'; // Ensure opacity is full
-    } else {
-      item.style.opacity = '0.2'; // Dim item
-      // item.classList.add('hide'); // Optionally hide completely
-    }
-  });
-}
+                update(ref(db, `users_list/${activeUserId}`), {
+                    unreadCountUser: increment(1),
+                    lastMessageTime: Date.now(),
+                    lastMessageText: "Admin: " + input.value
+                });
+                input.value = "";
+            }
+        });
 
-// --- MODAL & BOOKING FORM ---
-
-// MODAL
-function openModal(title, sub) {
-  document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-sub').textContent = sub;
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-
-
-// PREFILL BOOKING FORM
-function prefillBookingForm(serviceName) {
-  const fService = document.getElementById('f-service');
-  fService.value = serviceName;
-  updateServiceOptions(); // Make sure category is selected if possible
-  // Find the category for the serviceName and set f-category
-  const serviceCategories = {
-    '✂️ Haircut — Rs. 300+': 'hair',
-    '💈 Kids Haircut — Rs. 250+': 'hair',
-    '🎨 Hair Coloring — Rs. 800+': 'hair',
-    '✨ Hair Treatment — Rs. 600+': 'hair',
-    '🧔 Beard Trim — Rs. 200+': 'beard',
-    '🪒 Hot Towel Shave — Rs. 350+': 'beard',
-    '💆 Head Massage — Rs. 300+': 'skin',
-    '🧴 Deep Facial — Rs. 500+': 'skin',
-    '⭐ Basic Package — Rs. 500': 'package',
-    '👑 Classic Package — Rs. 900': 'package',
-    '💎 Premium Package — Rs. 1,500': 'package'
-  };
-  const category = serviceCategories[serviceName];
-  if (category) {
-    document.getElementById('f-category').value = category;
-    updateServiceOptions(); // Re-populate to make sure the specific option exists then select it
-    fService.value = serviceName; // Re-select after options are updated
-  }
-}
-
-// Update service options based on category
-const serviceOptions = {
-  'hair': [
-    '✂️ Premium Haircut — Rs. 300+',
-    '💈 Kids Haircut — Rs. 250+',
-    '🎨 Hair Coloring — Rs. 800+',
-    '✨ Hair Treatment — Rs. 600+'
-  ],
-  'beard': [
-    '🧔 Beard Trim — Rs. 200+',
-    '🪒 Hot Towel Shave — Rs. 350+'
-  ],
-  'skin': [
-    '💆 Head Massage — Rs. 300+',
-    '🧴 Deep Facial — Rs. 500+'
-  ],
-  'package': [
-    '⭐ Basic Package — Rs. 500',
-    '👑 Classic Package — Rs. 900',
-    '💎 Premium Package — Rs. 1,500'
-  ],
-  'all': [ // For direct selection without category first
-    '✂️ Premium Haircut — Rs. 300+',
-    '💈 Kids Haircut — Rs. 250+',
-    '🎨 Hair Coloring — Rs. 800+',
-    '✨ Hair Treatment — Rs. 600+',
-    '🧔 Beard Trim — Rs. 200+',
-    '🪒 Hot Towel Shave — Rs. 350+',
-    '💆 Head Massage — Rs. 300+',
-    '🧴 Deep Facial — Rs. 500+',
-    '⭐ Basic Package — Rs. 500',
-    '👑 Classic Package — Rs. 900',
-    '💎 Premium Package — Rs. 1,500'
-  ]
-};
-
-function updateServiceOptions() {
-  const category = document.getElementById('f-category').value;
-  const serviceSelect = document.getElementById('f-service');
-  serviceSelect.innerHTML = '<option value="">— Select Service —</option>'; // Clear existing options
-
-  const optionsToDisplay = serviceOptions[category] || serviceOptions['all']; // Fallback to all if no category selected
-  optionsToDisplay.forEach(service => {
-    const option = document.createElement('option');
-    option.value = service;
-    option.textContent = service;
-    serviceSelect.appendChild(option);
-  });
-}
-// Initialize service options on load
-document.addEventListener('DOMContentLoaded', updateServiceOptions);
-
-
-// BOOKING SUBMIT (Enhanced with localStorage for "backend" simulation)
-function submitBooking(sendViaWhatsApp = false) {
-  const name = document.getElementById('f-name').value;
-  const phone = document.getElementById('f-phone').value;
-  const service = document.getElementById('f-service').value;
-  const date = document.getElementById('f-date').value;
-  const time = document.getElementById('f-time').value;
-  const notes = document.getElementById('f-notes').value;
-
-  // Basic validation
-  if (!name || !phone || !service) {
-    alert('Please fill in Name, Phone Number, and Service.');
-    return;
-  }
-
-  const newBooking = {
-    id: Date.now(), // Unique ID for the booking
-    name: name,
-    phone: phone,
-    service: service,
-    date: date,
-    time: time,
-    notes: notes,
-    status: 'Pending', // Initial status
-    bookedAt: new Date().toLocaleString()
-  };
-
-  saveBookingToLocalStorage(newBooking);
-
-  if (sendViaWhatsApp) {
-    const msg = `✂️ *APPOINTMENT BOOKING*\n*Scissor Hair Salon — Multan*\n━━━━━━━━━━━━━━━━━━━━\n👤 *Name:* ${name}\n📱 *Phone:* ${phone}\n💈 *Service:* ${service}\n📅 *Date:* ${date}\n⏰ *Time:* ${time}\n📝 *Notes:* ${notes}\n━━━━━━━━━━━━━━━━━━━━\nPlease confirm my appointment. JazakAllah!`;
-    window.open('https://wa.me/923055320253?text=' + encodeURIComponent(msg), '_blank');
-  }
-
-  showToast();
-  // Clear form after submission
-  document.getElementById('f-name').value = '';
-  document.getElementById('f-phone').value = '';
-  document.getElementById('f-category').value = '';
-  document.getElementById('f-service').value = '';
-  document.getElementById('f-date').value = '';
-  document.getElementById('f-time').value = '';
-  document.getElementById('f-notes').value = '';
-  updateServiceOptions(); // Reset service options
-}
-
-function showToast() {
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 4000);
-}
-
-// Set min date for booking
-document.getElementById('f-date').min = new Date().toISOString().split('T')[0];
-
-
-// --- CLIENT-SIDE ADMIN PANEL (LOCALSTORAGE "BACKEND") ---
-const ADMIN_PASSWORD = 'admin'; // Hardcoded password
-let isAuthenticated = false;
-
-function adminLoginPrompt() {
-  const password = prompt("Enter admin password:");
-  if (password === ADMIN_PASSWORD) {
-    isAuthenticated = true;
-    document.getElementById('admin-panel').classList.add('active');
-    renderBookings(); // Show bookings after successful login
-    // Scroll to admin panel
-    document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
-  } else if (password !== null) { // If user didn't click cancel
-    alert('Incorrect password!');
-  }
-}
-
-function logoutAdmin() {
-  isAuthenticated = false;
-  document.getElementById('admin-panel').classList.remove('active');
-  alert('Logged out from admin panel.');
-}
-
-function getBookingsFromLocalStorage() {
-  try {
-    const bookings = JSON.parse(localStorage.getItem('scissorBookings')) || [];
-    // Ensure bookings are an array and sort them
-    if (!Array.isArray(bookings)) return [];
-    return bookings.sort((a, b) => b.id - a.id); // Sort by ID (latest first)
-  } catch (e) {
-    console.error("Error parsing bookings from localStorage:", e);
-    return [];
-  }
-}
-
-function saveBookingsToLocalStorage(bookings) {
-  localStorage.setItem('scissorBookings', JSON.stringify(bookings));
-}
-
-function saveBookingToLocalStorage(newBooking) {
-  const bookings = getBookingsFromLocalStorage();
-  bookings.push(newBooking);
-  saveBookingsToLocalStorage(bookings);
-  if (isAuthenticated) {
-    renderBookings(); // Update admin view if logged in
-  }
-}
-
-function renderBookings() {
-  const tableBody = document.getElementById('admin-bookings-table');
-  tableBody.innerHTML = ''; // Clear existing rows
-
-  if (!isAuthenticated) return;
-
-  const bookings = getBookingsFromLocalStorage();
-
-  if (bookings.length === 0) {
-    tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No bookings yet.</td></tr>';
-    return;
-  }
-
-  bookings.forEach(booking => {
-    const row = tableBody.insertRow();
-    row.insertCell().textContent = booking.id;
-    row.insertCell().textContent = booking.name;
-    row.insertCell().textContent = booking.phone;
-    row.insertCell().textContent = booking.service;
-    row.insertCell().textContent = booking.date;
-    row.insertCell().textContent = booking.time;
-    row.insertCell().textContent = booking.notes;
-    const statusCell = row.insertCell();
-    statusCell.textContent = booking.status;
-    statusCell.className = `status-${booking.status.toLowerCase()}`;
-
-    const actionsCell = row.insertCell();
-    const confirmBtn = document.createElement('button');
-    confirmBtn.textContent = 'Confirm';
-    confirmBtn.className = 'btn-action';
-    confirmBtn.onclick = () => updateBookingStatus(booking.id, 'Confirmed');
-    actionsCell.appendChild(confirmBtn);
-
-    const completeBtn = document.createElement('button');
-    completeBtn.textContent = 'Complete';
-    completeBtn.className = 'btn-action';
-    completeBtn.onclick = () => updateBookingStatus(booking.id, 'Completed');
-    actionsCell.appendChild(completeBtn);
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.className = 'btn-action delete';
-    deleteBtn.onclick = () => deleteBooking(booking.id);
-    actionsCell.appendChild(deleteBtn);
-  });
-}
-
-function updateBookingStatus(id, newStatus) {
-  let bookings = getBookingsFromLocalStorage();
-  const index = bookings.findIndex(b => b.id === id);
-  if (index > -1) {
-    bookings[index].status = newStatus;
-    saveBookingsToLocalStorage(bookings);
-    renderBookings();
-  }
-}
-
-function deleteBooking(id) {
-  if (confirm('Are you sure you want to delete this booking?')) {
-    let bookings = getBookingsFromLocalStorage();
-    bookings = bookings.filter(b => b.id !== id);
-    saveBookingsToLocalStorage(bookings);
-    renderBookings();
-  }
-}
-
-function clearAllBookings() {
-    if (confirm('Are you sure you want to delete ALL bookings? This cannot be undone.')) {
-        localStorage.removeItem('scissorBookings');
-        renderBookings();
-        alert('All bookings cleared!');
-    }
-}
-</script>
+        function renderMessage(msgId, data) {
+            const chatBox = document.getElementById('chat-box');
+            const div = document.createElement('div');
+            div.classList.add('msg', data.sender === 'admin' ? 'admin-msg' : 'user-msg');
+            
+            let ticksHtml = data.sender === 'admin' ? `<span id="ticks-${msgId}" class="ticks ${data.status === 'read' ? 'blue-ticks' : ''}">✓✓</span>` : '';
+            const time = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            div.innerHTML = `${data.text} <span class="msg-time">${time} ${ticksHtml}</span>`;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
 </body>
 </html>
