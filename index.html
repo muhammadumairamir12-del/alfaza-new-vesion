@@ -1,188 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Panel - Master Chat</title>
-    <style>
-        body { font-family: Arial, sans-serif; display: flex; height: 100vh; margin: 0; background: #ece5dd; }
-        
-        /* Sidebar List */
-        #sidebar { width: 350px; background: white; border-right: 1px solid #ccc; overflow-y: auto; display: flex; flex-direction: column;}
-        #sidebar h3 { background: #075e54; color: white; margin: 0; padding: 20px; text-align: center; }
-        .user-item { padding: 15px; border-bottom: 1px solid #f1f1f1; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .user-item:hover { background: #f5f5f5; }
-        .active-user { background: #ebebeb !important; }
-        .user-info { display: flex; flex-direction: column; width: 70%; }
-        .user-name { font-weight: bold; font-size: 16px; color: #000; }
-        .last-msg { font-size: 13px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .meta-info { display: flex; flex-direction: column; align-items: flex-end; }
-        .time { font-size: 12px; color: #888; margin-bottom: 5px; }
-        .badge { background: #25d366; color: white; font-size: 12px; font-weight: bold; border-radius: 50%; padding: 4px 8px; display: none; }
+<meta charset="UTF-8">
+<title>Admin Chat</title>
 
-        /* Chat Area */
-        #chat-area { flex: 1; display: flex; flex-direction: column; background: #e5ddd5; }
-        #chat-header { background: #075e54; color: white; padding: 15px; font-size: 18px; display: flex; flex-direction: column;}
-        #chat-header span { font-size: 12px; color: #dcf8c6; }
-        #chat-box { flex: 1; padding: 20px; overflow-y: auto; }
-        
-        .msg { margin: 5px 0; padding: 8px 12px; border-radius: 10px; max-width: 60%; clear: both; }
-        .user-msg { background: #ffffff; float: left; border-top-left-radius: 0; }
-        .admin-msg { background: #dcf8c6; float: right; border-top-right-radius: 0; }
-        .msg-time { font-size: 10px; color: #888; display: block; text-align: right; margin-top: 5px; }
-        .ticks { font-size: 12px; font-weight: bold; margin-left: 5px; color: gray; }
-        .blue-ticks { color: #34b7f1; }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .input-area { display: flex; padding: 10px; background: #f0f0f0; }
-        input { flex: 1; padding: 15px; border: none; border-radius: 20px; outline: none; margin-right: 10px; }
-        button { padding: 10px 20px; background: #075e54; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight:bold;}
-    </style>
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #ece5dd;
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+#sidebar {
+  width: 320px;
+  background: #fff;
+  border-right: 1px solid #ccc;
+  overflow-y: auto;
+  transition: 0.3s;
+}
+
+#sidebar h3 {
+  background: #075e54;
+  color: white;
+  padding: 15px;
+  margin: 0;
+}
+
+/* Mobile toggle */
+.menu-btn {
+  display: none;
+  padding: 10px;
+  background: #075e54;
+  color: white;
+  cursor: pointer;
+}
+
+/* Users */
+.user-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.user-item:hover { background: #f5f5f5; }
+
+/* Chat */
+#chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#chat-header {
+  background: #075e54;
+  color: white;
+  padding: 15px;
+}
+
+#chat-box {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+/* Messages animation */
+.msg {
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform: translateY(10px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+.user-msg {
+  background: white;
+}
+
+.admin-msg {
+  background: #dcf8c6;
+  margin-left: auto;
+}
+
+/* Input */
+.input-area {
+  display: flex;
+  padding: 10px;
+  background: #f0f0f0;
+}
+input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 20px;
+  border: none;
+}
+button {
+  padding: 10px 15px;
+  background: #075e54;
+  color: white;
+  border: none;
+  border-radius: 20px;
+}
+
+/* MOBILE */
+@media(max-width: 768px){
+  #sidebar {
+    position: absolute;
+    left: -100%;
+    height: 100%;
+    z-index: 10;
+  }
+  #sidebar.active {
+    left: 0;
+  }
+  .menu-btn {
+    display: block;
+  }
+}
+</style>
 </head>
+
 <body>
 
-    <div id="sidebar">
-        <h3>All Patients</h3>
-        <div id="users-list"></div>
-    </div>
+<div id="sidebar">
+  <h3>Users</h3>
+  <div id="users-list"></div>
+</div>
 
-    <div id="chat-area">
-        <div id="chat-header">
-            <div id="header-name">Select a patient</div>
-            <span id="header-email"></span>
-        </div>
-        <div id="chat-box"></div>
-        <div class="input-area">
-            <input type="text" id="msg-input" placeholder="Type your reply..." disabled>
-            <button id="send-btn" disabled>Send</button>
-        </div>
-    </div>
+<div id="chat-area">
+  <div id="chat-header">
+    <span class="menu-btn" onclick="toggleMenu()">☰</span>
+    <span id="header-name">Select User</span>
+  </div>
 
-    <audio id="notify-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+  <div id="chat-box"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, push, set, onChildAdded, onChildChanged, onValue, update, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+  <div class="input-area">
+    <input id="msg-input" placeholder="Type..." disabled>
+    <button id="send-btn" disabled>Send</button>
+  </div>
+</div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDulYuUV4Km2e67SSzveNl9poq90-EhkU8",
-            authDomain: "zigzoog-5708f.firebaseapp.com",
-            databaseURL: "https://zigzoog-5708f-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "zigzoog-5708f"
-        };
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getDatabase, ref, push, set, onChildAdded, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "...",
+  databaseURL: "...",
+  projectId: "..."
+};
 
-        let activeUserId = null;
-        let unsubscribeChatAdd = null;
-        let unsubscribeChatChange = null;
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-        function formatTime(timestamp) {
-            if(!timestamp) return "";
-            return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
+let activeUserId = null;
 
-        // 1. Fetch Users List in Realtime
-        onValue(ref(db, 'users_list'), (snapshot) => {
-            const usersListDiv = document.getElementById('users-list');
-            usersListDiv.innerHTML = ""; 
+// 🔔 Notification permission
+if (Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
 
-            let usersArray = [];
-            snapshot.forEach(child => { usersArray.push({ id: child.key, ...child.val() }); });
-            
-            // Sort: Naya message wala upar
-            usersArray.sort((a, b) => (b.lastMessageTime || 0) - (a.lastMessageTime || 0));
+// Sidebar toggle
+window.toggleMenu = () => {
+  document.getElementById("sidebar").classList.toggle("active");
+};
 
-            usersArray.forEach(user => {
-                const div = document.createElement('div');
-                div.classList.add('user-item');
-                if (user.id === activeUserId) div.classList.add('active-user');
-                
-                let badgeStyle = (user.unreadCountAdmin > 0) ? "display: inline-block;" : "display: none;";
-                
-                // Sound notification
-                if(user.unreadCountAdmin > 0 && user.id !== activeUserId) {
-                     document.getElementById('notify-sound').play().catch(()=>{});
-                }
+// Load users
+onValue(ref(db, 'users_list'), snapshot => {
+  const list = document.getElementById('users-list');
+  list.innerHTML = "";
 
-                div.innerHTML = `
-                    <div class="user-info">
-                        <span class="user-name">${user.name}</span>
-                        <span class="last-msg">${user.lastMessageText || "No messages yet."}</span>
-                    </div>
-                    <div class="meta-info">
-                        <span class="time">${formatTime(user.lastMessageTime)}</span>
-                        <span class="badge" style="${badgeStyle}">${user.unreadCountAdmin}</span>
-                    </div>
-                `;
-                div.onclick = () => loadChat(user.id, user.name, user.email);
-                usersListDiv.appendChild(div);
-            });
-        });
+  snapshot.forEach(child => {
+    const user = child.val();
+    const div = document.createElement("div");
+    div.className = "user-item";
+    div.innerText = user.name;
 
-        // 2. Load Chat for specific User
-        function loadChat(userId, userName, userEmail) {
-            activeUserId = userId;
-            
-            document.getElementById('header-name').innerText = userName;
-            document.getElementById('header-email').innerText = userEmail;
-            document.getElementById('msg-input').disabled = false;
-            document.getElementById('send-btn').disabled = false;
-            document.getElementById('chat-box').innerHTML = ""; 
+    div.onclick = () => {
+      loadChat(child.key, user.name);
+      document.getElementById("sidebar").classList.remove("active");
+    };
 
-            // Clear red dot notification
-            update(ref(db, `users_list/${userId}`), { unreadCountAdmin: 0 });
+    list.appendChild(div);
+  });
+});
 
-            if (unsubscribeChatAdd) unsubscribeChatAdd();
-            if (unsubscribeChatChange) unsubscribeChatChange();
+// Load chat
+function loadChat(userId, name){
+  activeUserId = userId;
+  document.getElementById("header-name").innerText = name;
+  document.getElementById("msg-input").disabled = false;
+  document.getElementById("send-btn").disabled = false;
+  document.getElementById("chat-box").innerHTML = "";
 
-            // Load Msgs
-            unsubscribeChatAdd = onChildAdded(ref(db, `chats/${userId}`), (snapshot) => {
-                const msgId = snapshot.key;
-                const data = snapshot.val();
-                renderMessage(msgId, data);
+  onChildAdded(ref(db, 'chats/' + userId), snap => {
+    const data = snap.val();
+    renderMessage(data);
 
-                // Admin seen the user's message
-                if (data.sender === 'user' && data.status === 'sent') {
-                    update(ref(db, `chats/${userId}/${msgId}`), { status: 'read' });
-                }
-            });
+    // 🔔 Show notification
+    if(data.sender === "user"){
+      new Notification("New Message", {
+        body: data.text
+      });
+    }
+  });
+}
 
-            // Blue Ticks listener
-            unsubscribeChatChange = onChildChanged(ref(db, `chats/${userId}`), (snapshot) => {
-                const data = snapshot.val();
-                const ticksSpan = document.getElementById(`ticks-${snapshot.key}`);
-                if (ticksSpan && data.status === 'read') ticksSpan.classList.add('blue-ticks');
-            });
-        }
+// Send message
+document.getElementById("send-btn").onclick = () => {
+  const input = document.getElementById("msg-input");
+  if(!input.value) return;
 
-        // 3. Send Message
-        document.getElementById('send-btn').addEventListener('click', () => {
-            const input = document.getElementById('msg-input');
-            if (input.value.trim() !== "" && activeUserId) {
-                const newMsgRef = push(ref(db, `chats/${activeUserId}`));
-                set(newMsgRef, { sender: 'admin', text: input.value, status: 'sent', timestamp: Date.now() });
+  push(ref(db, 'chats/' + activeUserId), {
+    sender: "admin",
+    text: input.value,
+    timestamp: Date.now()
+  });
 
-                update(ref(db, `users_list/${activeUserId}`), {
-                    unreadCountUser: increment(1),
-                    lastMessageTime: Date.now(),
-                    lastMessageText: "Admin: " + input.value
-                });
-                input.value = "";
-            }
-        });
+  input.value = "";
+};
 
-        function renderMessage(msgId, data) {
-            const chatBox = document.getElementById('chat-box');
-            const div = document.createElement('div');
-            div.classList.add('msg', data.sender === 'admin' ? 'admin-msg' : 'user-msg');
-            
-            let ticksHtml = data.sender === 'admin' ? `<span id="ticks-${msgId}" class="ticks ${data.status === 'read' ? 'blue-ticks' : ''}">✓✓</span>` : '';
-            const time = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            div.innerHTML = `${data.text} <span class="msg-time">${time} ${ticksHtml}</span>`;
-            chatBox.appendChild(div);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
+// Render
+function renderMessage(data){
+  const div = document.createElement("div");
+  div.className = "msg " + (data.sender === "admin" ? "admin-msg" : "user-msg");
+  div.innerText = data.text;
+
+  const box = document.getElementById("chat-box");
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+</script>
+
 </body>
+</html>
 </html>
