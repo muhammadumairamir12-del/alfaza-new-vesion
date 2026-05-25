@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed — AutoElite</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="order-success">
+<div id="scroll-progress"></div>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo"><div class="nav-logo-icon"><i class="fas fa-car"></i></div>Auto<span>Elite</span></a>
+  <ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop</a></li></ul>
+  <div class="nav-actions"><a href="cart.html" class="nav-icon-btn"><i class="fas fa-shopping-cart"></i><span class="cart-badge">0</span></a></div>
+</nav>
+
+<section class="section" style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding-top:120px">
+  <div class="success-page">
+    <div class="success-icon"><i class="fas fa-check"></i></div>
+    <h1 class="success-title">Order <span style="color:var(--red)">Confirmed!</span></h1>
+    <p class="success-subtitle">Thank you for choosing AutoElite! Your order has been received and our team will contact you within 1–2 hours to confirm your purchase.</p>
+
+    <div class="order-details-box">
+      <div class="order-detail-row"><span class="label">Order Number</span><span class="value" id="order-number" style="color:var(--red)">AE...</span></div>
+      <div class="order-detail-row"><span class="label">Status</span><span class="value" style="color:green"><i class="fas fa-circle" style="font-size:.5rem"></i> Processing</span></div>
+      <div class="order-detail-row"><span class="label">Estimated Contact</span><span class="value">Within 2 Hours</span></div>
+      <div class="order-detail-row"><span class="label">Total Paid</span><span class="value" id="order-total" style="color:var(--red)">—</span></div>
+    </div>
+
+    <div style="background:var(--red-pale);border-radius:12px;padding:24px;max-width:480px;margin:0 auto 30px;border:1px solid var(--red-soft)">
+      <p style="font-size:.9rem;color:var(--text-mid);margin-bottom:12px"><strong>Need help?</strong> Contact us directly:</p>
+      <p style="font-size:.95rem;margin-bottom:6px"><i class="fas fa-phone" style="color:var(--red);width:20px"></i> <strong>03184195665</strong></p>
+      <p style="font-size:.95rem;margin-bottom:6px"><i class="fab fa-whatsapp" style="color:var(--red);width:20px"></i> <strong>03188791637</strong></p>
+      <p style="font-size:.95rem"><i class="fas fa-envelope" style="color:var(--red);width:20px"></i> info@autoelite.pk</p>
+    </div>
+
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="shop.html" class="btn-primary"><i class="fas fa-car"></i> Continue Shopping</a>
+      <a href="index.html" class="btn-secondary"><i class="fas fa-home"></i> Back to Home</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div><div class="footer-brand-logo"><div class="logo-icon"><i class="fas fa-car"></i></div>Auto<span>Elite</span></div><p class="footer-desc">Pakistan's premium car marketplace.</p></div>
+    <div><div class="footer-heading">Quick Links</div><ul class="footer-links"><li><a href="index.html"><i class="fas fa-chevron-right"></i>Home</a></li><li><a href="shop.html"><i class="fas fa-chevron-right"></i>Shop</a></li></ul></div>
+    <div><div class="footer-heading">Contact</div><div class="footer-contact-item"><span class="footer-contact-icon"><i class="fas fa-phone"></i></span><span>03184195665</span></div></div>
+    <div></div>
+  </div>
+  <div class="footer-bottom"><p>© 2025 AutoElite Cars.</p></div>
+</footer>
+<div id="scroll-top"><i class="fas fa-chevron-up"></i></div>
+<script src="script.js"></script>
+</body>
+</html>

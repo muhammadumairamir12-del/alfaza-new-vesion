@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login / Signup — AutoElite</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body data-page="auth">
+<div id="page-loader"><div class="loader-brand">Auto<span>Elite</span></div><div class="loader-track"><div class="loader-bar"></div></div></div>
+
+<div class="auth-wrap" style="margin-top:0;min-height:100vh">
+  <!-- Left Panel -->
+  <div class="auth-left">
+    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1000" alt="Luxury Car">
+    <div class="auth-left-content">
+      <div style="font-size:3rem;margin-bottom:20px"><i class="fas fa-car"></i></div>
+      <h2>Welcome to AutoElite</h2>
+      <p>Pakistan's most trusted car marketplace. Browse 500+ verified cars with best prices and easy financing.</p>
+      <div style="display:flex;gap:20px;justify-content:center;margin-top:30px;flex-wrap:wrap">
+        <div style="text-align:center"><div style="font-size:1.5rem;font-weight:900;font-family:var(--font-cond)">500+</div><div style="font-size:.75rem;opacity:.7">Cars Listed</div></div>
+        <div style="text-align:center"><div style="font-size:1.5rem;font-weight:900;font-family:var(--font-cond)">10K+</div><div style="font-size:.75rem;opacity:.7">Happy Clients</div></div>
+        <div style="text-align:center"><div style="font-size:1.5rem;font-weight:900;font-family:var(--font-cond)">8+</div><div style="font-size:.75rem;opacity:.7">Years</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="auth-right">
+    <div class="auth-form-wrap">
+      <div class="auth-logo">Auto<span>Elite</span></div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" onclick="switchTab(this)">Login</button>
+        <button class="auth-tab" data-tab="signup" onclick="switchTab(this)">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <div class="auth-form-section active" data-form="login">
+        <div class="auth-title">Welcome Back</div>
+        <p class="auth-sub">Login to your AutoElite account</p>
+        <form onsubmit="handleAuth(event,'login')">
+          <div class="form-field"><label>Phone / Email</label><input type="text" placeholder="03xxxxxxxxx or you@email.com" required></div>
+          <div class="form-field">
+            <label>Password</label>
+            <div style="position:relative">
+              <input type="password" id="login-pass" placeholder="Enter your password" required style="padding-right:45px">
+              <button type="button" onclick="togglePass('login-pass')" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-light);font-size:.9rem"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;font-size:.83rem">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500"><input type="checkbox" style="accent-color:var(--red)"> Remember me</label>
+            <a href="#" style="color:var(--red);font-weight:600">Forgot Password?</a>
+          </div>
+          <button type="submit" class="submit-btn"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </form>
+        <div class="auth-divider">or continue with</div>
+        <div class="social-auth">
+          <button class="social-auth-btn" onclick="handleAuth(null,'google')"><i class="fab fa-google" style="color:#EA4335"></i> Google</button>
+          <button class="social-auth-btn" onclick="handleAuth(null,'facebook')"><i class="fab fa-facebook-f" style="color:#1877F2"></i> Facebook</button>
+        </div>
+        <p style="text-align:center;margin-top:20px;font-size:.85rem;color:var(--text-light)">Don't have an account? <a href="#" onclick="document.querySelector('[data-tab=signup]').click()" style="color:var(--red);font-weight:700">Sign Up</a></p>
+      </div>
+
+      <!-- Signup Form -->
+      <div class="auth-form-section" data-form="signup" style="display:none">
+        <div class="auth-title">Create Account</div>
+        <p class="auth-sub">Join AutoElite and start your car journey</p>
+        <form onsubmit="handleAuth(event,'signup')">
+          <div class="form-grid" style="gap:12px">
+            <div class="form-field"><label>First Name</label><input type="text" placeholder="Muhammad" required></div>
+            <div class="form-field"><label>Last Name</label><input type="text" placeholder="Ali" required></div>
+          </div>
+          <div class="form-field"><label>Phone / WhatsApp</label><input type="tel" placeholder="03xxxxxxxxx" required></div>
+          <div class="form-field"><label>Email Address</label><input type="email" placeholder="you@email.com" required></div>
+          <div class="form-field">
+            <label>Password</label>
+            <div style="position:relative">
+              <input type="password" id="signup-pass" placeholder="Create a strong password" required style="padding-right:45px">
+              <button type="button" onclick="togglePass('signup-pass')" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-light);font-size:.9rem"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div class="form-field"><label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-weight:400"><input type="checkbox" required style="accent-color:var(--red);margin-top:3px;flex-shrink:0"> I agree to the <a href="#" style="color:var(--red)">Terms of Service</a> and <a href="#" style="color:var(--red)">Privacy Policy</a></label></div>
+          <button type="submit" class="submit-btn"><i class="fas fa-user-plus"></i> Create Account</button>
+        </form>
+        <p style="text-align:center;margin-top:20px;font-size:.85rem;color:var(--text-light)">Already have an account? <a href="#" onclick="document.querySelector('[data-tab=login]').click()" style="color:var(--red);font-weight:700">Login</a></p>
+      </div>
+
+      <div style="margin-top:25px;text-align:center">
+        <a href="index.html" style="color:var(--text-light);font-size:.83rem"><i class="fas fa-arrow-left"></i> Back to Home</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+function switchTab(btn) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.auth-form-section').forEach(f => {
+    f.style.display = f.dataset.form === btn.dataset.tab ? 'block' : 'none';
+  });
+}
+function handleAuth(e, type) {
+  if (e) e.preventDefault();
+  showToast('<i class="fas fa-check-circle"></i> ' + (type === 'login' ? 'Logged in successfully!' : type === 'signup' ? 'Account created!' : type + ' login coming soon!'));
+  if (type === 'login' || type === 'signup') setTimeout(() => window.location.href = 'index.html', 1500);
+}
+function togglePass(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+</script>
+</body>
+</html>
